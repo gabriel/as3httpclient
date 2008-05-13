@@ -1,0 +1,72 @@
+== Setup
+
+Flex SDK: http://labs.adobe.com/technologies/flex/sdk/flex3sdk.html
+
+To include mxmlc and fcsh (from Flex SDK):
+  export PATH="/path/to/flex_sdk_3/bin"
+  
+AIR SDK: http://labs.adobe.com/downloads/airsdk.html
+
+To include adl and adt (from AIR SDK):
+  export PATH="/path/to/air_sdk/bin:$PATH"
+    
+== Tasks
+
+  # View all tasks
+  rake --tasks
+
+  # Compiling
+  rake air:compile 
+
+  # Running air debug launcher (ADL)
+  rake air:adl 
+
+  # Start FCSHD (for faster compilation)
+  rake fcsh:start
+
+  # Stop FCSHD
+  rake fcsh:stop 
+
+  # Restart FCSHD
+  rake fcsh:restart 
+
+  # Running alternate MXML, (we expect src/Test-app.xml descriptor)
+  rake air:adl MXML=src/Test.mxml
+
+  # Run ADL with debug disabled
+  rake air:adl DEBUG=false
+
+  # Testing
+  rake air:test
+
+  # Package AIR file
+  rake air:package
+
+== Adding other tasks
+
+Add tasks to the rakefile, for example:
+
+  # Run ADL for Catalog mxml
+  task :catalog do
+    ENV["MXML"] = "src/catalog/Catalog.mxml"
+    Rake::Task["air:adl"].invoke
+  end
+
+== Override default settings for Rakefile
+
+This is experimental. In the Rakefile, specify:
+
+  # Override default settings, this is experimental
+  # cwd = File.expand_path(File.dirname(__FILE__))
+  #ENV["AMXMLC_PATH"] = "mxmlc"
+  #ENV["ADT_PATH"] = "adt"
+  #ENV["BIN_DIR"] = "#{cwd}/bin"
+  #ENV["SRC_DIR"] = "#{cwd}/src"
+  #ENV["LIB_DIR"] = "#{cwd}/lib"
+  #ENV["TEST_DIR"] = "#{cwd}/test"
+  #ENV["APPXML_PATH"] = "#{cwd}/src/MyProject-app.xml"
+  #ENV["AIR_PATH"] = "#{cwd}/bin/MyProject.air"
+  #ENV["SWF_PATH"] = "#{cwd}/bin/MyProject.swf"
+  #ENV["AMXMLC_EXTRA_OPTS"] = ...
+  #ENV["ADL_EXTRA_OPTS"] = ...
+  #ENV["ADT_EXTRA_OPTS"] = ...

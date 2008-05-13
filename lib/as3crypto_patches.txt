@@ -1,0 +1,12 @@
+TLSEngine: line 691, instead of ==, do regex.
+
+var escaped:String = regexEscape(firstCert.getCommonName());
+var reg:String = escaped.replace(/\\\*/g, "[^.]+")
+if (new RegExp(reg).exec(_otherIdentity)) {
+
+The function to escape regular expression characters:
+
+// Regexp.escape(’\\*?{}.’) #=> \\\\\*\?\{\}\.
+private function regexEscape(s:String):String {
+  return s.replace(/([\\*?{}.])/g, "\\$1");
+}

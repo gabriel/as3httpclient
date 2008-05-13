@@ -1,0 +1,23 @@
+GET http://http-test.s3.amazonaws.com/test.png HTTP/1.1
+Accept-Encoding: gzip, deflate
+Accept-Language: en-us
+Host: http-test.s3.amazonaws.com
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-us) AppleWebKit/523.10.5 (KHTML, like Gecko) Version/3.0.4 Safari/523.10.6
+Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+
+----------------------------END OF HTTP REQUEST----------------------------
+HTTP/1.0 200 OK
+Content-Length: 12258
+Server: AmazonS3
+x-amz-request-id: 14F26EFDD792AD57
+x-amz-id-2: IIuGNJdHJtcytW/baDW+uqBmS6eU3L3T4jAfZt32q+Xf51JaTn7Ksthvd43y257D
+x-amz-meta-s3fox-filesize: 12258
+x-amz-meta-s3fox-modifiedtime: 1198207482000
+ETag: "1c075f0269ff216df66035374bf4222c"
+Connection: Close
+Last-Modified: Mon, 24 Dec 2007 01:07:21 GMT
+Date: Mon, 24 Dec 2007 01:43:13 GMT
+Content-Type: image/png
+
+----------------------------END OF HTTP RESPONSE----------------------------

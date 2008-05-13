@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:HttpClientAppImpl xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*" xmlns:ui="org.httpclient.ui.*">
+  
+  <mx:VBox>
+  
+    <mx:HBox>
+    
+      <mx:Label text="URI" width="100"/>
+      <mx:TextInput id="uri" width="200"/>
+      <mx:Button click="onGo(event)" label="Get"/>
+    
+    </mx:HBox>
+    
+    <mx:HBox>
+      <mx:Label text="Response" width="100"/>
+      <mx:TextArea id="response" width="400" height="300"/>
+    </mx:HBox>
+    
+  </mx:VBox>
+
+</ui:HttpClientAppImpl>
