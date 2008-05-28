@@ -56,11 +56,11 @@ package org.httpclient {
      * Create HTTP socket.
      *  
      * @param dispatcher Event dispatcher
-     * @param timeout Timeout in millis
+     * @param timeout Timeout (in millis)
      */
     public function HttpSocket(dispatcher:EventDispatcher, timeout:Number = -1) {
       _dispatcher = dispatcher;
-      if (timeout < 1000) timeout = 60 * 1000;
+      //if (timeout < 1000) timeout = 60 * 1000;
       _timer = new HttpTimer(timeout, onTimeout);
     }
     
@@ -154,6 +154,7 @@ package org.httpclient {
         
         _requestBuffer = new HttpRequestBuffer(request.body);
         
+        Log.debug("Sending request data");
         while (_requestBuffer.hasData) {
           var bytes:ByteArray = _requestBuffer.read();
           Log.debug("<" + bytes.length + ">");
@@ -215,7 +216,7 @@ package org.httpclient {
     
     private function onTimeout(idleTime:Number):void {
       close();
-      _dispatcher.dispatchEvent(new HttpErrorEvent("error", false, false, "Timeout", 0));
+      _dispatcher.dispatchEvent(new HttpTimeoutEvent("error", false, false, "Timeout", 0));
       
     }
     

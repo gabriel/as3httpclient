@@ -19,8 +19,8 @@ package org.httpclient {
     
     /**
      * Timer.
-     * @param timeout In millis
-     * @param onTimeout callback function(time:Number)
+     * @param timeout Timeout (in millis)
+     * @param onTimeout onTimeout(time:Number)
      */
     public function HttpTimer(timeout:Number, onTimeout:Function) {
       _timeout = timeout;

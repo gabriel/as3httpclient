@@ -12,18 +12,23 @@ package org.httpclient {
   import org.httpclient.http.Put;
   import org.httpclient.http.Post;
   import org.httpclient.http.Get;
+  import org.httpclient.http.Head;
+  import org.httpclient.http.Delete;
   import org.httpclient.events.HttpListener;
   
   import org.httpclient.http.multipart.Multipart;
-  import org.httpclient.http.multipart.FilePart;
+  //import org.httpclient.http.multipart.FilePart;
     
   [Event(name=Event.CLOSE, type="flash.events.Event")]
   [Event(name=Event.COMPLETE, type="flash.events.Event")]
   [Event(name=Event.CONNECT, type="flash.events.Event")]	
-  [Event(name=HttpDataEvent.DATA, type="org.httpclient.events.HttpProgressEvent")]   
-  [Event(name=HttpErrorEvent.ERROR, type="org.httpclient.events.HttpErrorEvent")]  
+  [Event(name=HttpDataEvent.DATA, type="org.httpclient.events.HttpDataEvent")]     
   [Event(name=HttpStatusEvent.STATUS, type="org.httpclient.events.HttpStatusEvent")]  
 
+  [Event(name=HttpTimeoutEvent.ERROR, type="org.httpclient.events.HttpTimeoutEvent")]  
+  [Event(name=IOErrorEvent.ERROR, type="flash.events.IOErrorEvent")]  
+  [Event(name=SecurityErrorEvent.STATUS, type="flash.events.SecurityErrorEvent")]  
+  
   /**
    * HTTP Client.
    */
@@ -31,12 +36,13 @@ package org.httpclient {
 
     private var _socket:HttpSocket;  
     private var _listener:*;
+    private var _timeout:int;
     
     /**
      * Create HTTP client.
      */
     public function HttpClient() {
-      
+      _timeout = -1;
     }
     
     /**
@@ -56,27 +62,33 @@ package org.httpclient {
     
     /**
      * Set the listener.
-     * @para listeners { onComplete: function(..) { }, onData: function(..) { }, .... }
+     * @para listener Listeners to callback on
      */
-    public function set listener(listeners:*):void {
-      _listener = new HttpListener(listeners);
+    public function set listener(listener:HttpListener):void {
+      //_listener = new HttpListener(listeners);
+      _listener = listener;
       _listener.register(this);
     }
+    
+    public function set timeout(timeout:int):void { _timeout = timeout; }
+    public function get timeout():int { return _timeout; }
 
     /**
      * Load a generic request.
-     * 
+     *  
      * @param uri URI
      * @param request HTTP request
+     * @param timeout Timeout (in millis)
      */
     public function request(uri:URI, request:HttpRequest, timeout:int = -1):void {
+      if (timeout == -1) timeout = _timeout;
       _socket = new HttpSocket(this, timeout);
       _socket.request(uri, request);
     }
     
     /**
-     * Upload file to URI. Sorry no progress events, and don't upload anything beefy since it 
-     * will all buffer in memory. flash.net.Socket is crippled.
+     * Upload file to URI. In the Flash/AIR VM, there is no way to determine when packets leave the computer, since
+     * the Socket#flush call is not blocking and there is no output progress events to monitor.
      *  
      *  var client:HttpClient = new HttpClient();
      *  
@@ -100,8 +112,8 @@ package org.httpclient {
       else throw new ArgumentError("Method must be PUT or POST");
             
       // Comment out to compile under flash
-      httpRequest.multipart = new Multipart([ new FilePart(file) ]);    
-      //throw new DefinitionError("Upload not supported; Rebuild with upload support.");
+      //httpRequest.multipart = new Multipart([ new FilePart(file) ]);    
+      throw new DefinitionError("Upload not supported; Rebuild with upload support.");
       
       request(uri, httpRequest);      
     }
@@ -115,30 +127,54 @@ package org.httpclient {
     }
     
     /**
-     * Get request.
-     * @param uri
-     * @param listeners
-     */
-    public static function get(uri:URI, listeners:*):void {
-      var client:HttpClient = new HttpClient();
-      client.listener = listeners;
-      client.get(uri);
-    }
-    
-    /**
-     * Post.
+     * Post with form data.
      *  
-     * var variables:Array = [ 
-     *  { name: "fname", value: "FirstName1" }, 
-     *  { name: "lname", value: "LastName1" } ];
+     *   var variables:Array = [ 
+     *    { name: "fname", value: "FirstName1" }, 
+     *    { name: "lname", value: "LastName1" } 
+     *   ];
      *  
-     * post(new URI("http://foo.com/"), variables);
+     *   client.post(new URI("http://foo.com/"), variables);
      *  
      * @param uri
      * @param variables
      */
-    public function post(uri:URI, variables:Array):void {
+    public function postFormData(uri:URI, variables:Array):void {
       request(uri, new Post(variables));
+    }
+    
+    /**
+     * Post with data.
+     * @param uri
+     * @param body
+     * @param contentType
+     */
+    public function post(uri:URI, body:*, contentType:String = null):void {
+      var post:Post = new Post();
+      post.body = body;
+      post.contentType = contentType;
+      request(uri, post);
+    }
+    
+    /**
+     * Put.
+     * @param uri
+     * @param body
+     * @param contentType
+     */ 
+    public function put(uri:URI, body:*, contentType:String = null):void {
+      var put:Put = new Put();
+      put.body = body;
+      put.contentType = contentType;
+      request(uri, put);
+    }
+    
+    /**
+     * Head.
+     * @param uri
+     */    
+    public function head(uri:URI):void {
+      request(uri, new Head());
     }
     
   }

@@ -36,8 +36,8 @@ package httpclient.http {
             
       client.listener.onComplete = addAsync(function():void { assertNotNull(response); }, 20 * 1000);
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
         assertTrue(response.isSuccess);
       };
       

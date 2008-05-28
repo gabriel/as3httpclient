@@ -17,11 +17,11 @@ package org.httpclient.http.multipart {
     private var _footer:ByteArray;
     
     /**
-     * Create multipart section.
+     * Create part section.
      *  
      * @param payload
      * @param contentType
-     * @param params, [ { name: "Name", value: "Value" }, ... ]
+     * @param params [ { name: "Name", value: "Value" }, ... ]
      * @param boundary Boundary or null, and a random one is generated
      */
     public function Part(payload:*, contentType:String = "application/octet-stream", params:Array = null) { 
@@ -36,6 +36,7 @@ package org.httpclient.http.multipart {
     
     /**
      * Get bytes.
+     * @return Next bytes
      */
     private function get nextBytes():* {
       if (_header.bytesAvailable > 0) return _header;      
@@ -46,8 +47,10 @@ package org.httpclient.http.multipart {
     }
     
     /**
-     * Read available data from payload.
-     * @return Data
+     * Read available data from payload into byte array.
+     * @param bytes Byte array to write into
+     * @param offset Offset into array
+     * @param length Number of bytes to read
      */
     public function readBytes(bytes:ByteArray, offset:uint = 0, length:uint = 0):void {      
       if (nextBytes.bytesAvailable > 0) {
@@ -56,12 +59,17 @@ package org.httpclient.http.multipart {
       }
     }
     
+    /**
+     * Get bytes available in part.
+     * @return Bytes available
+     */
     public function get bytesAvailable():uint {
       return nextBytes.bytesAvailable;
     }
     
     /**
      * Get part content length.
+     * @return Content length for this part
      */
     public function get length():uint {
       return _payload.length + _header.length + _footer.length;
@@ -76,6 +84,7 @@ package org.httpclient.http.multipart {
         
     /**
      * Build header.
+     * @return Header as byte array
      */
     protected function header():ByteArray {
       var bytes:ByteArray = new ByteArray();

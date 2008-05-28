@@ -3,6 +3,7 @@ package org.httpclient.events {
   import flash.events.Event;
   
   import org.httpclient.HttpResponse;
+  import org.httpclient.HttpHeader;
   
   public class HttpStatusEvent extends Event {
     
@@ -19,5 +20,13 @@ package org.httpclient.events {
       return _response;
     }
     
+    public function get code():String { 
+      return _response.code; 
+    }
+    
+    public function get header():HttpHeader
+    {
+      return _response.header;
+    }
   }
 }

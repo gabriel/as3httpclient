@@ -28,6 +28,11 @@ package org.httpclient {
       _headers.push({ name: name, value: value });
     }
     
+    public function remove(name:String):void {
+      var index:int = indexOf(name);
+      if (index != -1) _headers.splice(index, 1)
+    }
+    
     /**
      * Number of header (name, value) pairs.
      */
@@ -55,9 +60,24 @@ package org.httpclient {
      * Replace header, if set. (otherwise add)
      */
     public function replace(name:String, value:String):void {
+      if (value == null) {
+        remove(name);
+        return;
+      }
+      
       var prop:Object = find(name);
       if (prop) prop["value"] = value;
       else add(name, value);
+    }
+    
+    /**
+     * Index of header.
+     */
+    public function indexOf(name:String):int {      
+      for(var i:int = 0; i < _headers.length; i++) {
+        if (_headers[i]["name"].toLowerCase() == name.toLowerCase()) return i;
+      }
+      return -1;
     }
     
     /**
@@ -66,9 +86,8 @@ package org.httpclient {
      * @return Header property
      */
     public function find(name:String):Object {
-      for each(var prop:Object in _headers) {
-        if (prop["name"].toLowerCase() == name.toLowerCase()) return prop;
-      }
+      var index:int = indexOf(name);
+      if (index != -1) return _headers[index];
       return null;
     }
     

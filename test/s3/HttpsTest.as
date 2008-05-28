@@ -13,7 +13,6 @@ package s3 {
   import flash.utils.ByteArray;
   import flash.events.Event;
   import flash.events.ProgressEvent;
-  import flash.filesystem.*;
   
   public class HttpsTest extends TestCase {
     
@@ -23,18 +22,11 @@ package s3 {
     
     public static function suite():TestSuite {      
       var ts:TestSuite = new TestSuite();
-      ts.addTest(new HttpsTest("testGet"));      
+      ts.addTest(new HttpsTest("testGet"));            
       ts.addTest(new HttpsTest("testPut"));      
       return ts;
     }
-    
-    public function writeFile(file:File, data:ByteArray):void {
-      var fileStream:FileStream = new FileStream();
-      fileStream.open(file, FileMode.WRITE);
-      fileStream.writeBytes(data);
-      fileStream.close();      
-    }
-    
+        
     /**
      * Test get with https.
      */
@@ -52,8 +44,8 @@ package s3 {
         assertEquals(12258, testData.length);
       }, 20 * 1000);
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
         assertTrue(response.isSuccess);
       };
       
@@ -62,8 +54,8 @@ package s3 {
         testData.writeBytes(event.bytes);
       };
       
-      client.listener.onError = function(error:Error):void {
-        fail(error.message);
+      client.listener.onError = function(event:HttpErrorEvent):void {
+        fail(event.text);
       };
       
       client.request(uri, request);      
@@ -75,9 +67,9 @@ package s3 {
     public function testPut():void {
       var client:HttpClient = new HttpClient();
             
-      var uri:URI = new URI("https://http-test.s3.amazonaws.com/test_put.png");
+      var uri:URI = new URI("https://http-test.s3.amazonaws.com/test_https_put.txt");
       
-      var testFile:File = new File("app:/test/assets/test.png");
+      //var testFile:File = new File("app:/test/assets/test.png");
       
       var response:HttpResponse = null;
             
@@ -85,16 +77,20 @@ package s3 {
         assertNotNull(response);
       }, 20 * 1000);
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
         assertTrue(response.isSuccess);
       };
       
-      client.listener.onError = function(error:Error):void {
-        fail(error.message);
+      client.listener.onError = function(event:HttpErrorEvent):void {
+        fail(event.text);
       };
       
-      client.upload(uri, testFile);      
+      var data:ByteArray = new ByteArray();
+      data.writeUTFBytes("This is a test");
+      data.position = 0;
+      
+      client.put(uri, data);      
     }
     
   }

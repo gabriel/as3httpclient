@@ -1,7 +1,9 @@
 require 'rubygems'
 require 'airake'
 
-ENV["AIRAKE_ROOT"] ||= File.dirname(__FILE__)
+project_root = File.expand_path(File.dirname(__FILE__))
+
+ENV["AIRAKE_ROOT"] ||= project_root
 ENV["AIRAKE_ENV"] ||= "development"
 
 # For task list run, rake --tasks
@@ -12,3 +14,12 @@ task :adl => [ "air:adl" ] do; end
 task :docs => [ "air:docs" ] do; end 
 task :clean => [ "air:clean" ] do; end 
 task :acompc => [ "air:acompc" ] do; end 
+
+task :flash_swf do
+
+  cmd = "mxmlc +configname=flex -source-path #{project_root}/src -library-path+=#{project_root}/lib \
+-output #{project_root}/bin/HttpClientFlashApp.swf -- #{project_root}/src/org/httpclient/ui/HttpClientApp.mxml"
+
+  system(cmd)
+  
+end

@@ -12,6 +12,7 @@ package {
     public static const INFO:Number = 2;
     public static const WARN:Number = 3;
     public static const ERROR:Number = 4;
+    public static const OFF:Number = 5;
     
     public static var level:Number = DEBUG;
       

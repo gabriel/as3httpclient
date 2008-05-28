@@ -38,8 +38,8 @@ package s3 {
       var testData:ByteArray = new ByteArray();
       var response:HttpResponse = null;
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(e:HttpStatusEvent):void {
+        response = e.response;
         assertTrue(response.isSuccess);
       };
       
@@ -48,8 +48,8 @@ package s3 {
         testData.writeBytes(event.bytes);
       };
       
-      client.listener.onError = function(error:Error):void {
-        fail(error.message);
+      client.listener.onError = function(event:HttpErrorEvent):void {
+        fail(event.text);
       };      
       
       client.listener.onComplete = addAsync(function():void {
@@ -74,8 +74,8 @@ package s3 {
       var request:HttpRequest = new Get();
       var testData:ByteArray = new ByteArray();
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
         assertTrue(response.isSuccess);
       };
       
@@ -84,8 +84,8 @@ package s3 {
         testData.writeBytes(event.bytes);
       };
       
-      client.listener.onError = function(error:Error):void {
-        fail(error.message);
+      client.listener.onError = function(event:HttpErrorEvent):void {
+        fail(event.text);
       };
       
       client.listener.onComplete = addAsync(function():void {
@@ -109,8 +109,8 @@ package s3 {
       var request:HttpRequest = new Get();
       var testData:ByteArray = new ByteArray();
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
         assertTrue(response.isSuccess);
       };
       
@@ -119,8 +119,8 @@ package s3 {
         testData.writeBytes(event.bytes);
       };
       
-      client.listener.onError = function(error:Error):void {
-        fail(error.message);
+      client.listener.onError = function(event:HttpErrorEvent):void {
+        fail(event.text);
       };
       
       client.listener.onComplete = addAsync(function():void {

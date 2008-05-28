@@ -25,6 +25,7 @@ package org.httpclient.io {
     public function get bytesSent():uint { return _bytesSent; }
     
     public function get hasData():Boolean { 
+      if (!_body) return false;
       return _bytesSent < _body.length; 
     }
     
@@ -38,12 +39,10 @@ package org.httpclient.io {
         var length:uint = Math.min(BLOCK_SIZE, _body.bytesAvailable);
         _body.readBytes(bytes, 0, length);      
         bytes.position = 0;
-        _bytesSent += bytes.length;      
-        return bytes;
+        _bytesSent += bytes.length;        
       }
       
-      // No data available, return empty
-      return new ByteArray();
+      return bytes;
     }
    
     

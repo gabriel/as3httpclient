@@ -4,7 +4,7 @@ package org.httpclient.events {
   
   public class HttpErrorEvent extends ErrorEvent {
     
-    public static const ERROR:String = "error";
+    public static const ERROR:String = "httpError";
     
     public function HttpErrorEvent(type:String = "error", bubbles:Boolean = false, 
       cancelable:Boolean = false, text:String = "", id:int = 0):void {

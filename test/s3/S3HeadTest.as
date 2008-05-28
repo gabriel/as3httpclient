@@ -41,13 +41,13 @@ package s3 {
          
       }, 20 * 1000);
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
         assertTrue(response.isSuccess);
       };
       
-      client.listener.onError = function(error:Error):void {
-        fail(error.message);
+      client.listener.onError = function(event:HttpErrorEvent):void {
+        fail(event.text);
       };
       
       client.request(uri, request);

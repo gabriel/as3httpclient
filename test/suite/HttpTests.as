@@ -15,7 +15,9 @@ package suite {
       addTest(TLSTest.suite());
       addTest(GetTest.suite());
       addTest(PostTest.suite());
-      addTest(UploadTest.suite());
+      
+      // Uncomment when have upload supported
+      //addTest(UploadTest.suite());
     }
     
   }

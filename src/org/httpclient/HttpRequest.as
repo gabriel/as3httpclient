@@ -81,16 +81,41 @@ package org.httpclient {
     public function get body():* { return _body; }
     
     /**
+     * The request body can be anything but should respond to:
+     *  - readBytes(bytes:ByteArray, offset:uint, length:uint)
+     *  - length
+     *  - bytesAvailable
+     *  - close
+     */
+    public function set body(body:*):void {
+      _body = body;
+      _header.replace("Content-Length", _body.length);
+    }
+    
+    /**
+     * Set content type.
+     * @param contentType
+     */
+    public function set contentType(contentType:String):void {
+      _header.replace("Content-Type", contentType);
+    }
+    
+    /**
      * Set form data.
+     * @param params Array of key value pairs: [ { name: "Foo", value: "Bar" }, { name: "Baz", value: "Bewm" },... ]
+     * @param sep Separator 
      */
     public function setFormData(params:Array, sep:String = "&"):void {      
-      addHeader("Content-Type", "application/x-www-form-urlencoded");
+      _header.replace("Content-Type", "application/x-www-form-urlencoded");
       
       _body = new ByteArray();
-      _body.writeUTFBytes(params.map(function(item:*, index:int, array:Array):String { return encodeURI(item["name"]) + "=" + encodeURI(item["value"]); }).join("&"));
+      _body.writeUTFBytes(params.map(function(item:*, index:int, array:Array):String { 
+          return encodeURI(item["name"]) + "=" + encodeURI(item["value"]); 
+        }).join(sep));
+        
       _body.position = 0;
       
-      addHeader("Content-Length", _body.length);
+      _header.replace("Content-Length", _body.length);
     }
     
     /**
@@ -98,7 +123,7 @@ package org.httpclient {
      */
     public function set multipart(multipart:Multipart):void {      
       _header.replace("Content-Type", "multipart/form-data; boundary=" + Multipart.BOUNDARY);
-      addHeader("Content-Length", String(multipart.length));
+      _header.replace("Content-Length", String(multipart.length));      
       _body = multipart;
     }
     

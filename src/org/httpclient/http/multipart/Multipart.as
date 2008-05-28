@@ -17,8 +17,7 @@ package org.httpclient.http.multipart {
         
     /**
      * Create multipart.
-     * 
-     * @param parts
+     * @param parts Array of parts (Part)
      */
     public function Multipart(parts:Array) { 
       _parts = parts;
@@ -26,6 +25,7 @@ package org.httpclient.http.multipart {
     
     /**
      * Get content length.
+     * @return Content length
      */
     public function get length():uint {
       var length:uint = 0;
@@ -36,9 +36,10 @@ package org.httpclient.http.multipart {
     }
     
     /**
-     * Read available data from multipart.
-     * @return Data, or null if no more
-     *  
+     * Read available data from current part into specified byte array.
+     * @param bytes Byte array to write into
+     * @param offset Offset into array
+     * @param length Number of bytes to read from current part
      */
     public function readBytes(bytes:ByteArray, offset:uint, length:uint):void {      
       if (!hasMoreParts) return;
@@ -55,14 +56,18 @@ package org.httpclient.http.multipart {
       }
     }
     
+    /**
+     * Get number of bytes available in current part.
+     * @return Number of bytes to read
+     */
     public function get bytesAvailable():uint {
-      if (!hasMoreParts) throw new Error("No parts left to read");
-      
+      if (!hasMoreParts) throw new Error("No parts left to read");      
       return currentPart.bytesAvailable;
     }
     
     /**
      * Get current part for reading.
+     * @return Current part
      */
     public function get currentPart():Part {
       return Part(_parts[_partIndex]);
@@ -70,6 +75,7 @@ package org.httpclient.http.multipart {
     
     /**
      * Check if have more parts for reading.
+     * @return True if have parts left for reading, false otherwise
      */        
     protected function get hasMoreParts():Boolean {
       return _partIndex < _parts.length;
@@ -84,6 +90,7 @@ package org.httpclient.http.multipart {
     
     /**
      * Generate random boundary (see java httpclient MultipartRequestEntity).
+     * @return Random boundary
      */
     private static function generateBoundary():String {      
       var length:Number = Math.round(Math.random() * 10) * 30;

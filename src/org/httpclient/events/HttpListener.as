@@ -12,6 +12,15 @@ package org.httpclient.events {
     public var onError:Function = null;
     public var onStatus:Function = null;
     
+    /**
+      * Listeners:
+      *  - onClose()
+      *  - onComplete()
+      *  - onConnect()
+      *  - onData(e:HttpDataEvent)
+      *  - onError(e:HttpErrorEvent)
+      *  - onStatus(e:HttpStatusEvent)
+      */
     public function HttpListener(listeners:Object = null) {
       if (listeners) {
         if (listeners["onClose"] != undefined) onClose = listeners.onClose;
@@ -49,11 +58,11 @@ package org.httpclient.events {
     }
     
     public function onInternalError(e:HttpErrorEvent):void { 
-      if (onError != null) onError(new Error(e.text)); //, e.errorID));
+      if (onError != null) onError(e);
     }
     
     public function onInternalStatus(e:HttpStatusEvent):void { 
-      if (onStatus != null) onStatus(e.response);
+      if (onStatus != null) onStatus(e);
     }
     
   }

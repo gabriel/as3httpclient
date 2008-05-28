@@ -9,8 +9,7 @@ package org.httpclient.http {
   public class Post extends HttpRequest {
     
     public function Post(params:Array = null) {      
-      super("POST");
-      
+      super("POST");      
       if (params) setFormData(params);
     }
     
