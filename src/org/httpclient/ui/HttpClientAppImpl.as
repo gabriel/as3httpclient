@@ -43,8 +43,9 @@ package org.httpclient.ui {
 
     public function onCreationComplete(event:Event):void {      
       Security.allowDomain("*");
-      Security.loadPolicyFile("http://http-test.s3.amazonaws.com/crossdomain.xml");      
-      status = "Loaded policy file";
+      // You will need a socket policy server for this to work in Flash. While your security experts are patting themselves on the back 
+      // everyone is moving to a different technology.
+      Security.loadPolicyFile("xmlsocket://ducktyper.com:5001");
     }
 
     public function onRequest(event:Event):void {
