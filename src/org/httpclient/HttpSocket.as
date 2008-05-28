@@ -142,11 +142,10 @@ package org.httpclient {
      */
     protected function sendRequest(uri:URI, request:HttpRequest):void {               
       // Prepare response buffer
-      _responseBuffer = new HttpResponseBuffer(onResponseHeader, onResponseData);
+      _responseBuffer = new HttpResponseBuffer(onResponseHeader, onResponseData, onResponseComplete);
       
-      var header:ByteArray = request.getHeader(uri, HTTP_VERSION);
-      Log.debug("Sending request: " + header + "--");
-      _socket.writeBytes(header);
+      var headerBytes:ByteArray = request.getHeader(uri, HTTP_VERSION);
+      _socket.writeBytes(headerBytes);      
       _socket.flush();
       _timer.reset();
       
@@ -169,6 +168,8 @@ package org.httpclient {
         }
       }
       Log.debug("Send request done");
+      headerBytes.position = 0;
+      onRequestComplete(request, headerBytes.readUTFBytes(headerBytes.length));
     }
     
     
@@ -176,7 +177,7 @@ package org.httpclient {
      * Socket data available.
      */
     private function onSocketData(event:ProgressEvent):void {
-      while (_socket.bytesAvailable) {        
+      while (_socket && _socket.connected && _socket.bytesAvailable) {        
         _timer.reset();
         try {           
           
@@ -189,16 +190,25 @@ package org.httpclient {
           _responseBuffer.writeBytes(bytes);
           
         } catch(e:EOFError) {
-          // TODO: handle EOF
           Log.debug("EOF");
+          _dispatcher.dispatchEvent(new HttpErrorEvent(HttpErrorEvent.ERROR, false, false, "EOF", 1));          
           break;
         }                           
       }
     }
     
+    private function onResponseComplete(contentLength:Number):void {
+      Log.debug("Response complete");
+      onClose(new Event(Event.CLOSE));
+    }
+    
     //
     // Events (Custom listeners)
     //
+    
+    private function onRequestComplete(request:HttpRequest, header:String):void {      
+      _dispatcher.dispatchEvent(new HttpRequestEvent(request, header));
+    }
     
     private function onResponseHeader(response:HttpResponse):void {
       Log.debug("Response: " + response.code);
@@ -216,7 +226,7 @@ package org.httpclient {
     
     private function onTimeout(idleTime:Number):void {
       close();
-      _dispatcher.dispatchEvent(new HttpTimeoutEvent("error", false, false, "Timeout", 0));
+      _dispatcher.dispatchEvent(new HttpErrorEvent(HttpErrorEvent.TIMEOUT_ERROR, false, false, "Timeout", 0));
       
     }
     

@@ -5,11 +5,11 @@ package org.httpclient.events {
   
   public class HttpDataEvent extends Event {
     
-    public static const DATA:String = "data";
+    public static const DATA:String = "httpData";
     
     private var _bytes:ByteArray;
     
-    public function HttpDataEvent(bytes:ByteArray, type:String = "data", bubbles:Boolean = false, cancelable:Boolean = false):void {
+    public function HttpDataEvent(bytes:ByteArray, type:String = DATA, bubbles:Boolean = false, cancelable:Boolean = false):void {
       super(type, bubbles, cancelable);
       _bytes = bytes;
     }

@@ -18,7 +18,7 @@ task :acompc => [ "air:acompc" ] do; end
 task :flash_swf do
 
   cmd = "mxmlc +configname=flex -source-path #{project_root}/src -library-path+=#{project_root}/lib \
--output #{project_root}/bin/HttpClientFlashApp.swf -- #{project_root}/src/org/httpclient/ui/HttpClientApp.mxml"
+-output #{project_root}/html/HttpClientFlashApp.swf -- #{project_root}/src/org/httpclient/ui/HttpClientApp.mxml"
 
   system(cmd)
   

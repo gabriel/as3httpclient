@@ -28,6 +28,10 @@ package org.httpclient {
       _headers.push({ name: name, value: value });
     }
     
+    /**
+     * Remove header.
+     * @param name
+     */
     public function remove(name:String):void {
       var index:int = indexOf(name);
       if (index != -1) _headers.splice(index, 1)

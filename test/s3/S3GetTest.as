@@ -84,7 +84,7 @@ package s3 {
         testData.writeBytes(event.bytes);
       };
       
-      client.listener.onError = function(event:HttpErrorEvent):void {
+      client.listener.onError = function(event:ErrorEvent):void {
         fail(event.text);
       };
       
@@ -119,7 +119,7 @@ package s3 {
         testData.writeBytes(event.bytes);
       };
       
-      client.listener.onError = function(event:HttpErrorEvent):void {
+      client.listener.onError = function(event:ErrorEvent):void {
         fail(event.text);
       };
       

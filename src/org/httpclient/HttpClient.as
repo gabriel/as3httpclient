@@ -24,10 +24,11 @@ package org.httpclient {
   [Event(name=Event.CONNECT, type="flash.events.Event")]	
   [Event(name=HttpDataEvent.DATA, type="org.httpclient.events.HttpDataEvent")]     
   [Event(name=HttpStatusEvent.STATUS, type="org.httpclient.events.HttpStatusEvent")]  
-
-  [Event(name=HttpTimeoutEvent.ERROR, type="org.httpclient.events.HttpTimeoutEvent")]  
-  [Event(name=IOErrorEvent.ERROR, type="flash.events.IOErrorEvent")]  
-  [Event(name=SecurityErrorEvent.STATUS, type="flash.events.SecurityErrorEvent")]  
+  [Event(name=HttpRequestEvent.COMPLETE, type="org.httpclient.events.HttpRequestEvent")]
+  [Event(name=HttpErrorEvent.ERROR, type="org.httpclient.events.HttpErrorEvent")]  
+  [Event(name=HttpErrorEvent.TIMEOUT_ERROR, type="org.httpclient.events.HttpErrorEvent")]    
+  [Event(name=IOErrorEvent.IO_ERROR, type="flash.events.IOErrorEvent")]  
+  [Event(name=SecurityErrorEvent.SECURITY_ERROR, type="flash.events.SecurityErrorEvent")]  
   
   /**
    * HTTP Client.

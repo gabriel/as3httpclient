@@ -7,11 +7,11 @@ package org.httpclient.events {
   
   public class HttpStatusEvent extends Event {
     
-    public static const STATUS:String = "status";
+    public static const STATUS:String = "httpStatus";
     
     private var _response:HttpResponse;
     
-    public function HttpStatusEvent(response:HttpResponse, type:String = "status", bubbles:Boolean = false, cancelable:Boolean = false):void {
+    public function HttpStatusEvent(response:HttpResponse, type:String = STATUS, bubbles:Boolean = false, cancelable:Boolean = false):void {
       super(type, bubbles, cancelable);
       _response = response;     
     }

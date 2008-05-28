@@ -2,6 +2,9 @@ package org.httpclient.events {
   
   import flash.events.Event;
   import flash.events.EventDispatcher;
+  import flash.events.ErrorEvent;
+  import flash.events.SecurityErrorEvent;
+  import flash.events.IOErrorEvent;
   
   public class HttpListener {
     
@@ -11,6 +14,7 @@ package org.httpclient.events {
     public var onData:Function = null;
     public var onError:Function = null;
     public var onStatus:Function = null;
+    public var onRequest:Function = null;
     
     /**
       * Listeners:
@@ -18,8 +22,9 @@ package org.httpclient.events {
       *  - onComplete()
       *  - onConnect()
       *  - onData(e:HttpDataEvent)
-      *  - onError(e:HttpErrorEvent)
+      *  - onError(e:ErrorEvent)
       *  - onStatus(e:HttpStatusEvent)
+      *  - onRequest(e:HttpRequestEvent)
       */
     public function HttpListener(listeners:Object = null) {
       if (listeners) {
@@ -29,6 +34,7 @@ package org.httpclient.events {
         if (listeners["onData"] != undefined) onData = listeners.onData;
         if (listeners["onError"] != undefined) onError = listeners.onError;
         if (listeners["onStatus"] != undefined) onStatus = listeners.onStatus;
+        if (listeners["onRequest"] != undefined) onRequest = listeners.onRequest;
       }
     }
     
@@ -38,30 +44,38 @@ package org.httpclient.events {
       dispatcher.addEventListener(Event.CONNECT, onInternalConnect);
       dispatcher.addEventListener(HttpDataEvent.DATA, onInternalData);
       dispatcher.addEventListener(HttpErrorEvent.ERROR, onInternalError);
-      dispatcher.addEventListener(HttpStatusEvent.STATUS, onInternalStatus);      
+      dispatcher.addEventListener(HttpErrorEvent.TIMEOUT_ERROR, onInternalError);
+      dispatcher.addEventListener(HttpStatusEvent.STATUS, onInternalStatus);
+      dispatcher.addEventListener(HttpRequestEvent.COMPLETE, onInternalRequest);
+      dispatcher.addEventListener(IOErrorEvent.IO_ERROR, onInternalError);
+      dispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onInternalError);
     }
     
-    public function onInternalClose(e:Event):void { 
+    protected function onInternalClose(e:Event):void { 
       if (onClose != null) onClose();
     }
     
-    public function onInternalComplete(e:Event):void { 
+    protected function onInternalComplete(e:Event):void { 
       if (onComplete != null) onComplete();
     }
     
-    public function onInternalConnect(e:Event):void { 
+    protected function onInternalConnect(e:Event):void { 
       if (onConnect != null) onConnect();
     }
     
-    public function onInternalData(e:HttpDataEvent):void { 
+    protected function onInternalRequest(e:HttpRequestEvent):void {
+      if (onRequest != null) onRequest(e);
+    }
+    
+    protected function onInternalData(e:HttpDataEvent):void { 
       if (onData != null) onData(e);
     }
     
-    public function onInternalError(e:HttpErrorEvent):void { 
+    protected function onInternalError(e:ErrorEvent):void { 
       if (onError != null) onError(e);
     }
     
-    public function onInternalStatus(e:HttpStatusEvent):void { 
+    protected function onInternalStatus(e:HttpStatusEvent):void { 
       if (onStatus != null) onStatus(e);
     }
     

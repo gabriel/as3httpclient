@@ -47,7 +47,7 @@ package s3 {
         assertTrue(response.isSuccess);
       };
       
-      client.listener.onError = function(event:HttpErrorEvent):void {
+      client.listener.onError = function(event:ErrorEvent):void {
         fail(event.text);
       };
       

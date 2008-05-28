@@ -14,6 +14,9 @@ package org.httpclient.io {
         
     // Data buffer
     private var _buffer:HttpBuffer = new HttpBuffer();
+    
+    // Bytes read of body content
+    private var _bodyBytesRead:Number = 0;
         
     // Response header data parsed from bytes
     private var _headerData:Array = [];
@@ -29,15 +32,21 @@ package org.httpclient.io {
     
     // Notified of response body data: function(bytes:ByteArray):void { }
     private var _onResponseData:Function;    
+  
+    // Notified when response is complete: function(bytesRead:Number):void { }
+    private var _onResponseComplete:Function
         
     /**
      * Create response buffer.
-     * @param onPayload Notified of response body data: function(bytes:ByteArray):void { }
+     * @param onResponseHeader
+     * @param onResponseData
+     * @param onResponseComplete
      */
-    public function HttpResponseBuffer(onResponseHeader:Function, onResponseData:Function) { 
+    public function HttpResponseBuffer(onResponseHeader:Function, onResponseData:Function, onResponseComplete:Function) { 
       super();
       _onResponseHeader = onResponseHeader;
       _onResponseData = onResponseData;
+      _onResponseComplete = onResponseComplete;
     }
 
     /**
@@ -69,7 +78,10 @@ package org.httpclient.io {
               _responseHeader = null;
             } else {                      
               // Pass any extra as payload
-              handlePayload(_buffer.readAvailable());
+              var payload:ByteArray = _buffer.readAvailable();
+              Log.debug("Response payload: " + payload.length);
+              _bodyBytesRead += payload.length;
+              handlePayload(payload);
               break;
             }            
           
@@ -81,9 +93,15 @@ package org.httpclient.io {
         }    
               
       } else {
+        _bodyBytesRead += bytes.length;
+        Log.debug("Response payload: " + bytes.length);
         handlePayload(bytes);
       }
-            
+      
+      // Check if complete
+      if (_responseHeader && _bodyBytesRead >= _responseHeader.contentLength) {
+        _onResponseComplete(_responseHeader.contentLength);
+      }            
     }
     
     /**
@@ -110,7 +128,7 @@ package org.httpclient.io {
     /**
      * Parse HTTP response header.
      * @param lines Lines in header
-     * @return The HTTP response (header)
+     * @return The HTTP response so far
      */
     protected function parseHeader(lines:Array):HttpResponse {
       var line:String = lines[0];

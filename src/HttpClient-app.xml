@@ -18,8 +18,8 @@
 		<minimizable>true</minimizable>
 		<maximizable>true</maximizable>
 		<resizable>true</resizable>
-		<width>600</width>
-    <height>400</height>
+		<width>700</width>
+    <height>500</height>
     <x>100</x>
     <y>50</y>
 		<minSize>300 300</minSize>

@@ -1,22 +1,17 @@
 package org.httpclient.ui {
   
+  import flash.system.*;
+  import mx.controls.*;
+  import mx.containers.*;
+  import flash.events.*;
   import mx.core.Application;
-  import mx.controls.TextInput;
-  import mx.controls.TextArea;
-  import mx.controls.Label;
-  import mx.controls.ComboBox;
-  import mx.containers.TabNavigator;
-  import flash.events.Event;
   import mx.events.MenuEvent;
   import flash.utils.ByteArray;
   import mx.collections.ArrayCollection;
   
-  import org.httpclient.HttpClient;
-  import org.httpclient.http.Delete;
-  import org.httpclient.events.HttpListener;
-  import org.httpclient.events.HttpDataEvent;
-  import org.httpclient.events.HttpStatusEvent;
-  import org.httpclient.events.HttpErrorEvent;
+  import org.httpclient.*;
+  import org.httpclient.http.*;
+  import org.httpclient.events.*;
   import com.adobe.net.URI;
 
   public class HttpClientAppImpl extends Application {
@@ -24,74 +19,114 @@ package org.httpclient.ui {
     [Bindable]
     public var verbs:ArrayCollection = new ArrayCollection([ { label:"GET" }, { label:"HEAD" }, { label:"DELETE" }, { label:"PUT" }, { label:"POST" } ]);
     
+    [Bindable]
+    public var requestSent:String = "";
+    
+    [Bindable]
+    public var status:String = "";
+  
+    [Bindable]
+    public var responseStatus:String;
+    
+    [Bindable]
+    public var responseHeader:String;
+    
+    [Bindable]
+    public var responseBody:String;    
+    
+    // Components
     public var uriInput:TextInput;
-    public var verbCombo:ComboBox;
-    public var statusLabel:Label;
-    public var requestBodyArea:TextArea;
-    
-    public var responseStatusLabel:Label;
-    public var responseHeaderArea:TextArea;
-    public var responseBodyArea:TextArea;    
-    
+    public var requestHeaderArea:TextArea;
+    public var requestBodyArea:TextArea;    
     public var tabNavigator:TabNavigator;
+    public var verbCombo:ComboBox;
+
+    public function onCreationComplete(event:Event):void {      
+      Security.allowDomain("*");
+      Security.loadPolicyFile("http://http-test.s3.amazonaws.com/crossdomain.xml");      
+      status = "Loaded policy file";
+    }
 
     public function onRequest(event:Event):void {
       
       var verb:String = verbCombo.selectedItem.label;
-      
-      responseBodyArea.text = "";
-      responseStatusLabel.text = "";
-      responseHeaderArea.text = "";
+  
+      requestSent = "";
+      responseBody = "";
+      responseStatus = "";
+      responseHeader = "";    
       
       var listeners:Object = { 
-        onData: function(e:HttpDataEvent):void {           
-          statusLabel.text = "Received " + e.bytes.length + " bytes";
-          responseBodyArea.text += e.readUTFBytes();
+        onConnect: function():void {
+          status = "Connected";
+        },
+        onRequest: function(e:HttpRequestEvent):void {
+          status = "Request sent";
+          requestSent = e.header.replace(/\r\n/g, "\n");
+          if (e.request.body) requestSent += e.request.body;
         },
         onStatus: function(e:HttpStatusEvent):void {
-          statusLabel.text = "Got response header";
-          responseStatusLabel.text = e.code + " " + e.response.message;
-          responseHeaderArea.text = e.header.toString();
+          status = "Got response header";
+          responseStatus = e.code + " " + e.response.message;
+          responseHeader = e.header.toString();
         },
+        onData: function(e:HttpDataEvent):void {           
+          status = "Received " + e.bytes.length + " bytes";
+          responseBody += e.readUTFBytes();
+        },        
         onClose: function():void {
-          statusLabel.text = "Closed";
+          status = "Closed";
           tabNavigator.selectedIndex = 1;
         },
         onComplete: function():void {          
-          statusLabel.text = "Completed";
+          status = "Completed";
         },
-        onConnect: function():void {
-          statusLabel.text = "Connected";
-        },
-        onError: function(event:HttpErrorEvent):void {
-          statusLabel.text = "Error: " + event.text;
+        onError: function(event:ErrorEvent):void {
+          status = "Error: " + event.text;
         }
       };
       
-      statusLabel.text = "Connecting";
+      status = "Connecting";
       
       var client:HttpClient = new HttpClient();
       client.timeout = 5000;
       client.listener = new HttpListener(listeners);
       
-      var requestURI:URI = new URI(uriInput.text);
+      var request:HttpRequest = null;  
+      if (verb == "GET") request = new Get();        
+      else if (verb == "HEAD") request = new Head();
+      else if (verb == "DELETE") request = new Delete();
+      else if (verb == "PUT") request = new Put();
+      else if (verb == "POST") request = new Post();
+      else throw new ArgumentError("Invalid verb: " + verb);
+        
+      addCustomHeaders(request);
+      if (verb == "PUT" || verb == "POST") addBody(request);
       
+      client.request(new URI(uriInput.text), request);
+    }
+    
+    /**
+     * Add custom headers.
+     */
+    public function addCustomHeaders(request:HttpRequest):void {
+      var headerToAdd:Array = [];
+      var headerLines:Array = requestHeaderArea.text.split("\n");
+      for each(var headerLine:String in headerLines) {
+        var header:Array = headerLine.split(/:\s*/, 2);
+        request.addHeader(header[0], header[1]);
+      }      
+    }
+
+    /**
+     * Add body.
+     */    
+    public function addBody(request:HttpRequest):void {
       var data:ByteArray = new ByteArray();
       data.writeUTFBytes(requestBodyArea.text);
-      data.position = 0;      
-            
-      if (verb == "GET") {
-        client.get(requestURI);
-      } else if (verb == "HEAD") {
-        client.head(requestURI);
-      } else if (verb == "DELETE") {
-        client.request(requestURI, new Delete());
-      } else if (verb == "PUT") {
-        client.put(requestURI, data);
-      } else if (verb == "POST") {
-        client.post(requestURI, data);
-      }
-      else throw new ArgumentError("Invalid verb: " + verb);
+      data.position = 0;  
+          
+      request.body = data;
     }
     
   }
