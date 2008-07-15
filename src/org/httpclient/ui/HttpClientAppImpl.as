@@ -42,10 +42,7 @@ package org.httpclient.ui {
     public var verbCombo:ComboBox;
 
     public function onCreationComplete(event:Event):void {      
-      Security.allowDomain("*");
-      // You will need a socket policy server for this to work in Flash. While your security experts are patting themselves on the back 
-      // everyone is moving to a different technology.
-      Security.loadPolicyFile("xmlsocket://ducktyper.com:5001");
+      //Security.loadPolicyFile("xmlsocket://domain.com:5001");
     }
 
     public function onRequest(event:Event):void {

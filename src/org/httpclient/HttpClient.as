@@ -81,7 +81,7 @@ package org.httpclient {
      * @param request HTTP request
      * @param timeout Timeout (in millis)
      */
-    public function request(uri:URI, request:HttpRequest, timeout:int = -1):void {
+    public function request(uri:URI, request:HttpRequest, timeout:int = 60000):void {
       if (timeout == -1) timeout = _timeout;
       _socket = new HttpSocket(this, timeout);
       _socket.request(uri, request);

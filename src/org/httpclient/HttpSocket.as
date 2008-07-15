@@ -52,15 +52,17 @@ package org.httpclient {
     private var _requestBuffer:HttpRequestBuffer;
     private var _responseBuffer:HttpResponseBuffer;    
     
+    // Keep track of closed (TLSSocket doesn't like being closed twice)
+    private var _closed:Boolean = false;
+    
     /**
      * Create HTTP socket.
      *  
      * @param dispatcher Event dispatcher
-     * @param timeout Timeout (in millis)
+     * @param timeout Timeout (in millis); Defaults to 60 seconds.
      */
-    public function HttpSocket(dispatcher:EventDispatcher, timeout:Number = -1) {
+    public function HttpSocket(dispatcher:EventDispatcher, timeout:Number = 60000) {
       _dispatcher = dispatcher;
-      //if (timeout < 1000) timeout = 60 * 1000;
       _timer = new HttpTimer(timeout, onTimeout);
     }
     
@@ -91,10 +93,12 @@ package org.httpclient {
      * Close socket.
      */
     public function close():void {
+      Log.debug("Close; closed? " + _closed);
       _timer.stop();
       if (_socket.connected) {
         _socket.flush();
         _socket.close();
+        _closed = true;
       }
     }
     
@@ -142,8 +146,9 @@ package org.httpclient {
      */
     protected function sendRequest(uri:URI, request:HttpRequest):void {               
       // Prepare response buffer
-      _responseBuffer = new HttpResponseBuffer(onResponseHeader, onResponseData, onResponseComplete);
+      _responseBuffer = new HttpResponseBuffer(request.hasResponseBody, onResponseHeader, onResponseData, onResponseComplete);
       
+      Log.debug("Request URI: " + uri + " (" + request.method + ")");
       var headerBytes:ByteArray = request.getHeader(uri, HTTP_VERSION);
       _socket.writeBytes(headerBytes);      
       _socket.flush();
@@ -199,7 +204,9 @@ package org.httpclient {
     
     private function onResponseComplete(contentLength:Number):void {
       Log.debug("Response complete");
-      onClose(new Event(Event.CLOSE));
+      //onClose(new Event(Event.CLOSE));
+      onComplete();
+      if (!(_socket is TLSSocket)) close(); // Don't close TLSSocket; it has a bug I think
     }
     
     //
@@ -242,8 +249,6 @@ package org.httpclient {
     }
   
     private function onClose(event:Event):void {
-      onComplete(); // TODO: earlier?
-      close();
       _dispatcher.dispatchEvent(event.clone());                
     }
     

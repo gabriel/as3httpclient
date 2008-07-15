@@ -10,6 +10,11 @@ package org.httpclient.io {
   import org.httpclient.HttpResponse;
   import org.httpclient.HttpHeader;
   
+  import flash.errors.*;
+  
+  /**
+   * Bytes from response are placed in this buffer, and parsed according to transfer encoding.
+   */
   public class HttpResponseBuffer {
         
     // Data buffer
@@ -35,6 +40,12 @@ package org.httpclient.io {
   
     // Notified when response is complete: function(bytesRead:Number):void { }
     private var _onResponseComplete:Function
+    
+    // If we expect response body
+    private var _hasResponseBody:Boolean;
+    
+    // If response buffer is done
+    private var _isPayloadDone:Boolean = false;
         
     /**
      * Create response buffer.
@@ -42,8 +53,9 @@ package org.httpclient.io {
      * @param onResponseData
      * @param onResponseComplete
      */
-    public function HttpResponseBuffer(onResponseHeader:Function, onResponseData:Function, onResponseComplete:Function) { 
+    public function HttpResponseBuffer(hasResponseBody:Boolean, onResponseHeader:Function, onResponseData:Function, onResponseComplete:Function) { 
       super();
+      _hasResponseBody = hasResponseBody;
       _onResponseHeader = onResponseHeader;
       _onResponseData = onResponseData;
       _onResponseComplete = onResponseComplete;
@@ -56,7 +68,8 @@ package org.httpclient.io {
      * @param bytes Data
      */
     public function writeBytes(bytes:ByteArray):void {
-
+      if (_isPayloadDone) throw new IllegalOperationError("Response is finished; can't accept more bytes");
+      
       // If we don't have the full header yet
       if (!_responseHeader) {
         _buffer.write(bytes);
@@ -76,12 +89,12 @@ package org.httpclient.io {
             if (_responseHeader.isInformation) {              
               _buffer.truncate();
               _responseHeader = null;
+              _isPayloadDone = false;
             } else {                      
               // Pass any extra as payload
               var payload:ByteArray = _buffer.readAvailable();
-              Log.debug("Response payload: " + payload.length);
-              _bodyBytesRead += payload.length;
-              handlePayload(payload);
+              Log.debug("Response payload (from parsing header): " + payload.length);              
+              _isPayloadDone = handlePayload(payload);
               break;
             }            
           
@@ -93,15 +106,14 @@ package org.httpclient.io {
         }    
               
       } else {
-        _bodyBytesRead += bytes.length;
         Log.debug("Response payload: " + bytes.length);
-        handlePayload(bytes);
+        _isPayloadDone = handlePayload(bytes);
       }
       
       // Check if complete
-      if (_responseHeader && _bodyBytesRead >= _responseHeader.contentLength) {
-        _onResponseComplete(_responseHeader.contentLength);
-      }            
+      Log.debug("Payload done? " + _isPayloadDone);
+      if (!_hasResponseBody) _onResponseComplete(0);
+      else if (_isPayloadDone) _onResponseComplete(_responseHeader.contentLength);
     }
     
     /**
@@ -113,15 +125,20 @@ package org.httpclient.io {
      * Notify with response data.
      * Check for transfer encodings, otherwise stream it direct.
      * @param bytes The data
+     * @return True if we don't expect any more data, false otherwise
      */
-    private function handlePayload(bytes:ByteArray):void {    
-      if (bytes.bytesAvailable <= 0) return;
-      
+    private function handlePayload(bytes:ByteArray):Boolean {    
       if (_responseHeader.isChunked) {
         _responseBody.write(bytes);
-        _responseBody.readChunks(_onResponseData);
+        _bodyBytesRead += bytes.length;
+        return _responseBody.readChunks(_onResponseData);
       } else {                     
-        _onResponseData(bytes);
+        if (bytes.bytesAvailable > 0) {
+          _onResponseData(bytes);
+          _bodyBytesRead += bytes.length;
+        }
+        Log.debug("Bytes read (body): " + _bodyBytesRead + ", content length: " + _responseHeader.contentLength);
+        return (_bodyBytesRead >= _responseHeader.contentLength);
       }
     }
     

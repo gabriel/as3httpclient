@@ -23,7 +23,9 @@ package org.httpclient {
      * @param onTimeout onTimeout(time:Number)
      */
     public function HttpTimer(timeout:Number, onTimeout:Function) {
-      _timeout = timeout;
+      if (timeout <= 0) throw new ArgumentError("Timeout should be specified in milliseconds greater than 0");
+      
+      if (timeout > 0) _timeout = timeout;
       _onTimeout = onTimeout;
       _timer = new Timer(1000);
       _timer.addEventListener(TimerEvent.TIMER, onTimer);
