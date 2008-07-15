@@ -44,8 +44,11 @@ package httpclient.http {
         testData.position = 0;
         var responseBody:String = testData.readUTFBytes(testData.bytesAvailable);
         
-        var length:uint = uint(response.header.getValue("Content-Length"));
-        assertEquals(length, responseBody.length);
+        var contentLengthString:String = response.header.getValue("Content-Length");
+        if (contentLengthString) {
+          var length:uint = uint(contentLengthString);
+          assertEquals(length, responseBody.length);
+        }
         
       }, 20 * 1000);
       

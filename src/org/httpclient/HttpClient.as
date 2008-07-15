@@ -38,12 +38,15 @@ package org.httpclient {
     private var _socket:HttpSocket;  
     private var _listener:*;
     private var _timeout:int;
+    private var _proxy:URI;
     
     /**
      * Create HTTP client.
+     * @param proxy URI
      */
-    public function HttpClient() {
+    public function HttpClient(proxy:URI = null) {
       _timeout = -1;
+      _proxy = proxy;
     }
     
     /**
@@ -83,7 +86,7 @@ package org.httpclient {
      */
     public function request(uri:URI, request:HttpRequest, timeout:int = 60000):void {
       if (timeout == -1) timeout = _timeout;
-      _socket = new HttpSocket(this, timeout);
+      _socket = new HttpSocket(this, timeout, _proxy);
       _socket.request(uri, request);
     }
     

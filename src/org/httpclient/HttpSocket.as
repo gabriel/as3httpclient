@@ -52,18 +52,18 @@ package org.httpclient {
     private var _requestBuffer:HttpRequestBuffer;
     private var _responseBuffer:HttpResponseBuffer;    
     
-    // Keep track of closed (TLSSocket doesn't like being closed twice)
-    private var _closed:Boolean = false;
-    
+    private var _proxy:URI;
+        
     /**
      * Create HTTP socket.
      *  
      * @param dispatcher Event dispatcher
      * @param timeout Timeout (in millis); Defaults to 60 seconds.
      */
-    public function HttpSocket(dispatcher:EventDispatcher, timeout:Number = 60000) {
+    public function HttpSocket(dispatcher:EventDispatcher, timeout:Number = 60000, proxy:URI = null) {
       _dispatcher = dispatcher;
       _timer = new HttpTimer(timeout, onTimeout);
+      _proxy = proxy;
     }
     
     /**
@@ -93,12 +93,10 @@ package org.httpclient {
      * Close socket.
      */
     public function close():void {
-      Log.debug("Close; closed? " + _closed);
       _timer.stop();
       if (_socket.connected) {
         _socket.flush();
         _socket.close();
-        _closed = true;
       }
     }
     
@@ -131,10 +129,10 @@ package org.httpclient {
       _timer.start();
       
       // Connect
-      var port:int = Number(uri.port);
+      var port:int = (_proxy) ? Number(_proxy.port) : Number(uri.port);
       if (!port) port = getDefaultPort(secure);
       
-      var host:String = uri.authority;      
+      var host:String = (_proxy) ? _proxy.authority : uri.authority;
       Log.debug("Connecting: host: " + host + ", port: " + port);
       _socket.connect(host, port);              
     }
@@ -149,7 +147,7 @@ package org.httpclient {
       _responseBuffer = new HttpResponseBuffer(request.hasResponseBody, onResponseHeader, onResponseData, onResponseComplete);
       
       Log.debug("Request URI: " + uri + " (" + request.method + ")");
-      var headerBytes:ByteArray = request.getHeader(uri, HTTP_VERSION);
+      var headerBytes:ByteArray = request.getHeader(uri, _proxy, HTTP_VERSION);
       _socket.writeBytes(headerBytes);      
       _socket.flush();
       _timer.reset();
@@ -207,6 +205,7 @@ package org.httpclient {
       //onClose(new Event(Event.CLOSE));
       onComplete();
       if (!(_socket is TLSSocket)) close(); // Don't close TLSSocket; it has a bug I think
+      else _timer.stop();
     }
     
     //

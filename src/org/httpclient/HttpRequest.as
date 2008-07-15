@@ -5,6 +5,7 @@
 package org.httpclient {
   
   import com.adobe.net.URI;
+  import com.hurlant.util.Base64;
 
   import flash.utils.ByteArray;
   import org.httpclient.http.multipart.Multipart;
@@ -130,7 +131,7 @@ package org.httpclient {
     /**
      * Get header.
      */
-    public function getHeader(uri:URI, version:String):ByteArray {
+    public function getHeader(uri:URI, proxy:URI, version:String):ByteArray {
       
       var bytes:ByteArray = new ByteArray();
       
@@ -142,9 +143,18 @@ package org.httpclient {
       var host:String = uri.authority;
       if (uri.port) host += ":" + uri.port;
       
-      bytes.writeUTFBytes(method + " " + encodeURI(path) + " HTTP/" + version + "\r\n");
+      if (proxy) {
+        bytes.writeUTFBytes(method + " " + uri.toString() + " HTTP/" + version + "\r\n");
+      } else {
+        bytes.writeUTFBytes(method + " " + encodeURI(path) + " HTTP/" + version + "\r\n");
+      }
       bytes.writeUTFBytes("Host: " + host + "\r\n");
       
+      if (proxy && proxy.username && proxy.password) {
+        var credential:String = proxy.username + ":" + proxy.password;
+        addHeader("Proxy-Authorization", "Basic " + Base64.encode(credential));
+      }
+
       if (!header.isEmpty)
         bytes.writeUTFBytes(header.content);
         
