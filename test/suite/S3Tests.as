@@ -11,9 +11,8 @@ package suite {
       super();
       addTest(S3GetTest.suite());
       addTest(S3HeadTest.suite());      
-      addTest(S3DeleteTest.suite());
-      
       addTest(S3PutTest.suite());
+      addTest(S3DeleteTest.suite());
       addTest(HttpsTest.suite());      
     }
     

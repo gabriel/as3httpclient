@@ -23,6 +23,7 @@
 			private function createSuite():TestSuite {
  				var ts:TestSuite = new TestSuite();
  				
+ 				// Toggle this for suite vs single test
  				var singleTest:Boolean = false;
  				
  				if (!singleTest) {
@@ -35,7 +36,7 @@
           //ts.addTest(new DeliciousTests());
         } else { 				
  				  /* For single tests */
-          //ts.addTest(new GetTest("testGet"));        
+          ts.addTest(new HttpsTest("testPut"));        
           //ts.addTest(new TagsTest("testGetTags"));
         }
  				

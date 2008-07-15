@@ -11,6 +11,7 @@ package s3 {
   
   import flash.utils.ByteArray;
   import flash.events.Event;
+  import flash.events.ErrorEvent;
   
   public class S3GetTest extends TestCase {
     

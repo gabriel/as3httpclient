@@ -13,6 +13,7 @@ package s3 {
   import flash.utils.ByteArray;
   import flash.events.Event;
   import flash.filesystem.File;
+  import flash.events.ErrorEvent;
   
   public class S3DeleteTest extends TestCase {
     
@@ -31,8 +32,8 @@ package s3 {
      */
     public function testDelete():void {
       var client:HttpClient = new HttpClient();
-            
-      var uri:URI = new URI("http://http-test.s3.amazonaws.com/test_put.png");
+      
+      var uri:URI = new URI("http://http-test-put.s3.amazonaws.com/test.txt");
       
       var request:HttpRequest = new Delete();
       var response:HttpResponse = null;

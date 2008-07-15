@@ -13,6 +13,7 @@ package s3 {
   import flash.utils.ByteArray;
   import flash.events.Event;
   import flash.events.ProgressEvent;
+  import flash.events.ErrorEvent;
   
   public class HttpsTest extends TestCase {
     
@@ -67,9 +68,7 @@ package s3 {
     public function testPut():void {
       var client:HttpClient = new HttpClient();
             
-      var uri:URI = new URI("https://http-test.s3.amazonaws.com/test_https_put.txt");
-      
-      //var testFile:File = new File("app:/test/assets/test.png");
+      var uri:URI = new URI("https://http-test-put.s3.amazonaws.com/test.txt");
       
       var response:HttpResponse = null;
             

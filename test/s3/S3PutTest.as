@@ -12,6 +12,7 @@ package s3 {
   
   import flash.utils.ByteArray;
   import flash.events.Event;
+  import flash.events.ErrorEvent;
   
   public class S3PutTest extends TestCase {
     
@@ -31,7 +32,7 @@ package s3 {
     public function testPut():void {
       var client:HttpClient = new HttpClient();
             
-      var uri:URI = new URI("http://http-test.s3.amazonaws.com/test_put.txt");
+      var uri:URI = new URI("http://http-test-put.s3.amazonaws.com/test.txt");
       
       var response:HttpResponse = null;
             
@@ -41,6 +42,7 @@ package s3 {
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
         response = event.response;
+        Log.debug("Response: " + response);
         assertTrue(response.isSuccess);
       };
       
