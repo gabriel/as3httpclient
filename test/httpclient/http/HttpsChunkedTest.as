@@ -7,49 +7,50 @@ package httpclient.http {
   import org.httpclient.http.*;
   import org.httpclient.events.*;
   
-  import com.adobe.net.*;
-  
+  import com.adobe.net.URI;
   import flash.utils.ByteArray;
-  import flash.events.Event;
-  
-  public class GetTest extends TestCase {
+  import flash.events.*;
     
-    public function GetTest(methodName:String):void {
+  public class HttpsChunkedTest extends TestCase {
+    
+    public function HttpsChunkedTest(methodName:String):void {
       super(methodName);
     }
     
     public static function suite():TestSuite {      
       var ts:TestSuite = new TestSuite();
-      ts.addTest(new GetTest("testGet"));
+      ts.addTest(new HttpsChunkedTest("testHttpsChunked"));
       return ts;
     }
     
     /**
-     * Test get.
-     * This also tests chunked encoding, since google search uses that.
      */
-    public function testGet():void {
-      
+    public function testHttpsChunked():void {
       var client:HttpClient = new HttpClient();
-      
-      var response:HttpResponse = null;
             
-      client.listener.onComplete = addAsync(function():void { assertNotNull(response); }, 20 * 1000);
+      var uri:URI = new URI("https://www.amazon.com");
+      
+      var request:HttpRequest = new Get();
+      var response:HttpResponse = null;
+      var testData:ByteArray = new ByteArray();
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
         response = event.response;
         assertTrue(response.isSuccess);
       };
       
-      client.listener.onData = function(event:HttpDataEvent):void {
-        var data:String = event.readUTFBytes();
-        Log.debug("Response data: " + data);
-      };
-
-      var uri:URI = new URI("http://www.google.com/search?q=rel-me");
-      client.get(uri);
+      client.listener.onComplete = addAsync(function():void {
+        assertNotNull(response);
+      }, 20 * 1000);
       
+      client.listener.onError = function(event:ErrorEvent):void {
+        fail(event.text);
+      };
+      
+      client.request(uri, request);
     }
+    
+
     
   }
   

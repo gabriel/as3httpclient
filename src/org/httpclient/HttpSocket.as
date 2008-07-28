@@ -148,6 +148,11 @@ package org.httpclient {
       
       Log.debug("Request URI: " + uri + " (" + request.method + ")");
       var headerBytes:ByteArray = request.getHeader(uri, _proxy, HTTP_VERSION);
+      
+      // Debug
+      Log.debug("Header:\n" + headerBytes.readUTFBytes(headerBytes.length));
+      headerBytes.position = 0;
+      
       _socket.writeBytes(headerBytes);      
       _socket.flush();
       _timer.reset();

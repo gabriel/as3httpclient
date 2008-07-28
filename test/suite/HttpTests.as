@@ -15,6 +15,8 @@ package suite {
       addTest(TLSTest.suite());
       addTest(GetTest.suite());
       addTest(PostTest.suite());
+      addTest(UriEscapeTest.suite());
+      addTest(HttpsChunkedTest.suite());
       
       // Uncomment when have upload supported
       //addTest(UploadTest.suite());

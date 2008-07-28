@@ -5,12 +5,16 @@
 package org.httpclient {
   
   import com.adobe.net.URI;
+  import com.adobe.net.URIEncodingBitmap;
   import com.hurlant.util.Base64;
 
   import flash.utils.ByteArray;
   import org.httpclient.http.multipart.Multipart;
 
   public class HttpRequest {
+    
+    public static const kUriPathEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %:?#@");
+    public static const kUriQueryEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %");
     
     // Request method. For example, "GET"
     protected var _method:String;
@@ -131,22 +135,25 @@ package org.httpclient {
     /**
      * Get header.
      */
-    public function getHeader(uri:URI, proxy:URI, version:String):ByteArray {
+    public function getHeader(uri:URI, proxy:URI = null, version:String = null):ByteArray {
       
       var bytes:ByteArray = new ByteArray();
       
       var path:String = uri.path;
       if (!path) path = "/";
+      else path = URI.fastEscapeChars(path, kUriPathEscapeBitmap);
       
-      if (uri.query) path += "?" + uri.query;
+      if (uri.query) path += "?" + URI.fastEscapeChars(uri.query, kUriQueryEscapeBitmap);
       
       var host:String = uri.authority;
       if (uri.port) host += ":" + uri.port;
       
+      if (!version) version = "1.1";
+      
       if (proxy) {
         bytes.writeUTFBytes(method + " " + uri.toString() + " HTTP/" + version + "\r\n");
       } else {
-        bytes.writeUTFBytes(method + " " + encodeURI(path) + " HTTP/" + version + "\r\n");
+        bytes.writeUTFBytes(method + " " + path + " HTTP/" + version + "\r\n");
       }
       bytes.writeUTFBytes("Host: " + host + "\r\n");
       
