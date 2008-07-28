@@ -68,7 +68,8 @@ package org.httpclient.io {
      * @param bytes Data
      */
     public function writeBytes(bytes:ByteArray):void {
-      if (_isPayloadDone) throw new IllegalOperationError("Response is finished; can't accept more bytes");
+      //if (_isPayloadDone) throw new IllegalOperationError("Response is finished; can't accept more bytes");
+      if (_isPayloadDone) return; // TODO: Figure out why on some TLS chunked encoding this happens (oh maybe chunked encoding footer?)
       
       // If we don't have the full header yet
       if (!_responseHeader) {
