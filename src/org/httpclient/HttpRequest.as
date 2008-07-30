@@ -13,8 +13,8 @@ package org.httpclient {
 
   public class HttpRequest {
     
-    public static const kUriPathEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %:?#@");
-    public static const kUriQueryEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %");
+    public static const kUriPathEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %?#");
+    public static const kUriQueryEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %=|:?#/@+"); // Probably don't need to escape all these
     
     // Request method. For example, "GET"
     protected var _method:String;
@@ -134,16 +134,31 @@ package org.httpclient {
     
     /**
      * Get header.
+     *
+     *  TODO: There is alot of escaping here. Don't think URI class expects to get escaped values out in pieces
+     *  It only gives you fully escape on full URI toString.
      */
     public function getHeader(uri:URI, proxy:URI = null, version:String = null):ByteArray {
+      
+      // Force escape; this just makes sure that non-escaped are escaped internally
+      // Still have to escape on the way out below
+      uri.forceEscape();      
       
       var bytes:ByteArray = new ByteArray();
       
       var path:String = uri.path;
       if (!path) path = "/";
       else path = URI.fastEscapeChars(path, kUriPathEscapeBitmap);
-      
-      if (uri.query) path += "?" + URI.fastEscapeChars(uri.query, kUriQueryEscapeBitmap);
+
+      // Escape params manually; and escape alot
+      var query:Object = uri.getQueryByMap();
+      var params:Array = [];
+      for(var key:String in query) {
+        var escapedKey:String = URI.fastEscapeChars(key, kUriQueryEscapeBitmap);
+        var escapedValue:String = URI.fastEscapeChars(query[key], kUriQueryEscapeBitmap);
+        params.push(escapedKey + "=" + escapedValue);
+      }      
+      if (params.length > 0) path += "?" + params.join("&");      
       
       var host:String = uri.authority;
       if (uri.port) host += ":" + uri.port;

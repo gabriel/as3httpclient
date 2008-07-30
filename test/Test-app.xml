@@ -23,7 +23,6 @@
     <x>100</x>
     <y>50</y>
 		<minSize>300 300</minSize>
-		<maxSize>800 800</maxSize>
 	</initialWindow>
 	<installFolder>Test</installFolder>
 	<programMenuFolder>Test</programMenuFolder>

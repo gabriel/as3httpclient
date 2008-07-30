@@ -36,7 +36,7 @@
           //ts.addTest(new DeliciousTests());
         } else { 				
  				  /* For single tests */
-          ts.addTest(new UriEscapeTest("testUnescapeQuery"));        
+          ts.addTest(new UriEscapeTest("testEscapePath"));        
           //ts.addTest(new TagsTest("testGetTags"));
         }
  				

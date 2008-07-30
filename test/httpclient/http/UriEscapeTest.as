@@ -17,14 +17,15 @@ package httpclient.http {
     
     public static function suite():TestSuite {      
       var ts:TestSuite = new TestSuite();
-      ts.addTest(new UriEscapeTest("testUnescape"));
-      ts.addTest(new UriEscapeTest("testUnescapeQuery"));
+      ts.addTest(new UriEscapeTest("testEscapePath"));
+      ts.addTest(new UriEscapeTest("testEscapeQuery"));
+      ts.addTest(new UriEscapeTest("testQueryAlreadyEscaped"));
       return ts;
     }
     
     /**
      */
-    public function testUnescape():void {
+    public function testEscapePath():void {
       var request:HttpRequest = new HttpRequest("GET");
       var uri:URI = new URI("https://http-test.s3.amazonaws.com/test-characters%25$%23.txt");
       var bytes:ByteArray = request.getHeader(uri);
@@ -32,30 +33,24 @@ package httpclient.http {
       assertEquals("GET /test-characters%25$%23.txt HTTP/1.1\r\nHost: http-test.s3.amazonaws.com\r\nConnection: close\r\n\r\n", s);
     }
     
-    public function testUnescapeQuery():void {
+    public function testEscapeQuery():void {
       var request:HttpRequest = new HttpRequest("GET");
+      
       var uri:URI = new URI("https://http-test.s3.amazonaws.com/test.txt?foo=KJSDFSDF DS+/FOO");
       var bytes:ByteArray = request.getHeader(uri);
       var s:String = bytes.readUTFBytes(bytes.length);
-      assertEquals("GET /test.txt?foo=KJSDFSDF%20DS+/FOO HTTP/1.1\r\nHost: http-test.s3.amazonaws.com\r\nConnection: close\r\n\r\n", s);
+      assertEquals("GET /test.txt?foo=KJSDFSDF%20DS%2B%2FFOO HTTP/1.1\r\nHost: http-test.s3.amazonaws.com\r\nConnection: close\r\n\r\n", s);
     }
     
-    // URI bug?
-    public function testEscape1():void {      
+    public function testQueryAlreadyEscaped():void {
       var request:HttpRequest = new HttpRequest("GET");
-      var uri:URI = new URI("https://http-test.s3.amazonaws.com/test-characters%$#&@.txt");
+      
+      // /bar?action=getevent&token=KD/+c=|sau=|ted=      
+      var uri:URI = new URI("http://foo.com/bar?action=getevent&token=KD%2F%2Bc%3D%7Csau%3D%7Cted%3D");
       var bytes:ByteArray = request.getHeader(uri);
       var s:String = bytes.readUTFBytes(bytes.length);
-      Log.debug("S=" + s);
-    }
-    
-    // URI bug?
-    public function testEscape2():void {      
-      var request:HttpRequest = new HttpRequest("GET");
-      var uri:URI = new URI("https://http-test.s3.amazonaws.com/test-characters$#%.txt");
-      var bytes:ByteArray = request.getHeader(uri);
-      var s:String = bytes.readUTFBytes(bytes.length);
-      Log.debug("S=" + s);
+      // TODO: URI doesn't maintain order this test is even more brittle than before :O
+      assertEquals("GET /bar?action=getevent&token=KD%2F%2Bc%3D%7Csau%3D%7Cted%3D HTTP/1.1\r\nHost: foo.com\r\nConnection: close\r\n\r\n", s)
     }
     
   }
