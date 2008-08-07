@@ -71,8 +71,8 @@ package org.httpclient {
      * Create Socket or TLSSocket depending on URI scheme (http or https).
      */
     protected function createSocket(secure:Boolean = false):void {      
-      if (!secure) _socket = new Socket();
-      else _socket = new TLSSocket();
+      if (secure && !_proxy) _socket = new TLSSocket();
+      else _socket = new Socket();
       
       _socket.addEventListener(Event.CONNECT, onConnect);       
       _socket.addEventListener(Event.CLOSE, onClose);
@@ -106,7 +106,11 @@ package org.httpclient {
      */
     public function request(uri:URI, request:HttpRequest):void {
       var onConnect:Function = function():void {
-        sendRequest(uri, request);
+        if (uri.scheme == "https" && _proxy) {
+          connectProxy(uri, request);
+        } else {
+          sendRequest(uri, request);
+        }
       };
       
       // Connect
@@ -137,6 +141,44 @@ package org.httpclient {
       _socket.connect(host, port);              
     }
     
+    /**
+     * Send CONNECT request for https proxy
+     * @param uri URI
+     */
+    protected function connectProxy(uri:URI, request:HttpRequest):void {
+      var proxyResponse:HttpResponse;
+
+      var onProxyHeader:Function = function(response:HttpResponse):void {
+        proxyResponse = response;
+      };
+
+      var onProxyData:Function = function(bytes:ByteArray):void {};
+
+      var onProxyComplete:Function = function(contentLength:Number):void {
+        _timer.stop();
+        if (proxyResponse.isSuccess) {
+          var socket:TLSSocket = new TLSSocket();
+          socket.startTLS(_socket, uri.authority);
+          _socket = socket;
+          sendRequest(uri, request);
+        } else {
+          _dispatcher.dispatchEvent(new HttpErrorEvent(HttpErrorEvent.ERROR, false, false, "CONNECT method failed", 1));
+        }
+      };
+    
+      // Prepare response buffer
+      _responseBuffer = new HttpResponseBuffer(false, onProxyHeader, onProxyData, onProxyComplete);
+      
+      var bytes:ByteArray = new ByteArray();
+      bytes.writeUTFBytes("CONNECT " + uri.authority + ":" + ((uri.port) ? uri.port : DEFAULT_HTTPS_PORT) + " HTTP/" + HTTP_VERSION + "\r\n\r\n");
+      bytes.position = 0;
+      
+      _socket.writeBytes(bytes);
+      _socket.flush();
+      _timer.reset();
+      Log.debug("Send CONNECT done");
+    }
+
     /**
      * Send request.
      * @param uri URI
