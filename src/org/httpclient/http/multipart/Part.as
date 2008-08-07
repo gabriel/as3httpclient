@@ -79,6 +79,7 @@ package org.httpclient.http.multipart {
      * Close payload.
      */
     public function close():void {
+      if (!(_payload is ByteArray))
       _payload.close();
     }
         
@@ -96,12 +97,12 @@ package org.httpclient.http.multipart {
       bytes.writeUTFBytes("Content-Disposition: form-data; ");
       
       // Params
-      bytes.writeUTFBytes(_params.map(function(item:*, index:int, array:Array):void { item["name"] + "=\"" + item["value"] + "\""; }).join("; "));
+      bytes.writeUTFBytes(_params.map(function(item:*, index:int, array:Array):String { return item["name"] + "=\"" + item["value"] + "\""; }).join("; "));
       bytes.writeUTFBytes("\r\n");
       
       // Content type
       bytes.writeUTFBytes("Content-Type: " + _contentType + "\r\n");
-      bytes.writeUTFBytes("Content-Length: " + _payload.length + "\r\n");
+      //bytes.writeUTFBytes("Content-Length: " + _payload.length + "\r\n");
       
       // Empty line      
       bytes.writeUTFBytes("\r\n");
