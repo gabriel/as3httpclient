@@ -36,7 +36,7 @@
           //ts.addTest(new DeliciousTests());
         } else { 				
  				  /* For single tests */
-          ts.addTest(new UriEscapeTest("testEscapePath"));        
+          ts.addTest(new S3PostTest("testPost"));        
           //ts.addTest(new TagsTest("testGetTags"));
         }
  				

@@ -7,6 +7,7 @@ package org.httpclient {
   import com.adobe.net.URI;
   import com.adobe.net.URIEncodingBitmap;
   import com.hurlant.util.Base64;
+  import flash.errors.IllegalOperationError;
 
   import flash.utils.ByteArray;
   import org.httpclient.http.multipart.Multipart;
@@ -28,16 +29,18 @@ package org.httpclient {
     /**
      * Create request.
      *  
-     * The request body can be anything but should respond to:
+     * The raw request body can be anything but should respond to:
      *  - readBytes(bytes:ByteArray, offset:uint, length:uint)
      *  - length
      *  - bytesAvailable
      *  - close
      *  
+     * To set multipart form data, don't pass in a body. Use request.setMultipart(...)
+     * To set form data, don't pass in a body. Use request.setFormData(...)
+     *  
      * @param method
      * @param header
      * @param body 
-     *  
      */
     public function HttpRequest(method:String, header:HttpHeader = null, body:* = null) {
       _method = method;
@@ -91,6 +94,8 @@ package org.httpclient {
      *  - length
      *  - bytesAvailable
      *  - close
+     *  
+     * @throws IllegalOperationError if content is already set
      */
     public function set body(body:*):void {
       _body = body;
@@ -106,16 +111,20 @@ package org.httpclient {
     }
     
     /**
-     * Set form data.
+     * Set request body as form data content (type is x-www-form-urlencoded)
+     *  
      * @param params Array of key value pairs: [ { name: "Foo", value: "Bar" }, { name: "Baz", value: "Bewm" },... ]
      * @param sep Separator 
+     * @throws IllegalOperationError if content is already set
      */
     public function setFormData(params:Array, sep:String = "&"):void {      
+      if (_body) throw new IllegalOperationError("The body content was already set; You can only set using either setMultipart, setFormData or body=");
+      
       _header.replace("Content-Type", "application/x-www-form-urlencoded");
       
       _body = new ByteArray();
       _body.writeUTFBytes(params.map(function(item:*, index:int, array:Array):String { 
-          return encodeURI(item["name"]) + "=" + encodeURI(item["value"]); 
+          return encodeURI(item.name) + "=" + encodeURI(item.value); 
         }).join(sep));
         
       _body.position = 0;
@@ -124,9 +133,12 @@ package org.httpclient {
     }
     
     /**
-     * Set multipart.
+     * Set request body as multipart content.
+     * @throws IllegalOperationError if content is already set
      */
-    public function set multipart(multipart:Multipart):void {      
+    public function setMultipart(multipart:Multipart):void {      
+      if (_body) throw new IllegalOperationError("The body content was already set; You can only set using either setMultipart, setFormData or body=");
+      
       _header.replace("Content-Type", "multipart/form-data; boundary=" + Multipart.BOUNDARY);
       _header.replace("Content-Length", String(multipart.length));      
       _body = multipart;

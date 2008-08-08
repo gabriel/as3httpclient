@@ -8,6 +8,7 @@ package org.httpclient {
   
   import flash.events.EventDispatcher;
   import flash.events.Event;
+  import flash.errors.IllegalOperationError;
   
   import org.httpclient.http.Put;
   import org.httpclient.http.Post;
@@ -115,10 +116,8 @@ package org.httpclient {
       else if (method == "POST") httpRequest = new Post();
       else throw new ArgumentError("Method must be PUT or POST");
             
-      // Comment out to compile under flash
-      //httpRequest.multipart = new Multipart([ new FilePart(file) ]);    
-      throw new DefinitionError("Upload not supported; Rebuild with upload support.");
-      
+      //httpRequest.setMultipart(new Multipart([ new FilePart(file) ]));    
+      throw new IllegalOperationError("Not supported, comment out the line above");
       request(uri, httpRequest);      
     }
     
@@ -148,7 +147,20 @@ package org.httpclient {
     }
     
     /**
-     * Post with data.
+     * Post with multipart.
+     *  
+     * @param uri
+     * @param multipart
+     */
+    public function postMultipart(uri:URI, multipart:Multipart):void {
+      var post:Post = new Post();
+      post.setMultipart(multipart);
+      request(uri, post);
+    }
+    
+    /**
+     * Post with raw data.
+     *  
      * @param uri
      * @param body
      * @param contentType

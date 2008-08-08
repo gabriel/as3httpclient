@@ -46,11 +46,11 @@ package httpclient.http {
       var request:HttpRequest = new HttpRequest("GET");
       
       // /bar?action=getevent&token=KD/+c=|sau=|ted=      
-      var uri:URI = new URI("http://foo.com/bar?action=getevent&token=KD%2F%2Bc%3D%7Csau%3D%7Cted%3D");
+      var uri:URI = new URI("http://foo.com/bar?token=KD%2F%2Bc%3D%7Csau%3D%7Cted%3D");
       var bytes:ByteArray = request.getHeader(uri);
       var s:String = bytes.readUTFBytes(bytes.length);
       // TODO: URI doesn't maintain order this test is even more brittle than before :O
-      assertEquals("GET /bar?action=getevent&token=KD%2F%2Bc%3D%7Csau%3D%7Cted%3D HTTP/1.1\r\nHost: foo.com\r\nConnection: close\r\n\r\n", s)
+      assertEquals("GET /bar?token=KD%2F%2Bc%3D%7Csau%3D%7Cted%3D HTTP/1.1\r\nHost: foo.com\r\nConnection: close\r\n\r\n", s)
     }
     
   }

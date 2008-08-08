@@ -8,9 +8,9 @@ package org.httpclient.http.multipart {
   
   public class Part {
         
-    private var _contentType:String;
-    private var _params:Array;
-    private var _boundary:String;
+    private var _name:String;
+    private var _contentType:String;        
+    private var _contentTransferEncoding:String;
     
     private var _header:ByteArray;
     private var _payload:*;
@@ -21,14 +21,23 @@ package org.httpclient.http.multipart {
      *  
      * @param payload
      * @param contentType
-     * @param params [ { name: "Name", value: "Value" }, ... ]
-     * @param boundary Boundary or null, and a random one is generated
+     * @param contentTransferEncoding
+     *  
      */
-    public function Part(payload:*, contentType:String = "application/octet-stream", params:Array = null) { 
+    public function Part(name:String, payload:*, contentType:String = null, contentTransferEncoding:String = null) { 
+      
+      // Convert payload to UTF bytes if its a String
+      if (payload is String) {
+        var stringBytes:ByteArray = new ByteArray();
+        stringBytes.writeUTFBytes(payload);
+        stringBytes.position = 0;
+        payload = stringBytes;        
+      }
+      
+      _name = name;
       _payload = payload;
       _contentType = contentType;
-      _params = params;
-      if (!_params) _params = [];
+      _contentTransferEncoding = contentTransferEncoding;
       
       _header = header();
       _footer = footer();
@@ -79,12 +88,25 @@ package org.httpclient.http.multipart {
      * Close payload.
      */
     public function close():void {
-      if (!(_payload is ByteArray))
-      _payload.close();
+      if (!(_payload is ByteArray)) _payload.close(); // TODO: Can we check responds to?
     }
         
     /**
      * Build header.
+     *  
+     * Example,
+     *   --BOUNDARY
+     *   Content-Disposition: form-data; name="field1"
+     *
+     *   <payload>
+     *
+     * Or, 
+     *   --BOUNDARY
+     *   Content-Disposition: form-data; name="userfile"; filename="$filename"
+     *   Content-Type: $mimetype
+     *   Content-Transfer-Encoding: binary
+     * 
+     *   <payload>
      * @return Header as byte array
      */
     protected function header():ByteArray {
@@ -95,14 +117,14 @@ package org.httpclient.http.multipart {
       
       // Content disposition
       bytes.writeUTFBytes("Content-Disposition: form-data; ");
-      
-      // Params
-      bytes.writeUTFBytes(_params.map(function(item:*, index:int, array:Array):String { return item["name"] + "=\"" + item["value"] + "\""; }).join("; "));
+      if (_name) bytes.writeUTFBytes("name=\"" + _name + "\"")
       bytes.writeUTFBytes("\r\n");
       
       // Content type
-      bytes.writeUTFBytes("Content-Type: " + _contentType + "\r\n");
-      //bytes.writeUTFBytes("Content-Length: " + _payload.length + "\r\n");
+      if (_contentType) bytes.writeUTFBytes("Content-Type: " + _contentType + "\r\n");
+      
+      // Content transfer encoding
+      if (_contentTransferEncoding) bytes.writeUTFBytes("Content-Transfer-Encoding: " + _contentTransferEncoding + "\r\n");
       
       // Empty line      
       bytes.writeUTFBytes("\r\n");
@@ -111,9 +133,14 @@ package org.httpclient.http.multipart {
       return bytes;
     }
     
+    /**
+     * Build footer
+     * Example,
+     *   --BOUNDARY--
+     */
     protected function footer():ByteArray {
       var bytes:ByteArray = new ByteArray();
-      bytes.writeUTFBytes("\r\n");
+      bytes.writeUTFBytes("--" + Multipart.BOUNDARY + "--\r\n");
       bytes.position = 0;
       return bytes;
     }

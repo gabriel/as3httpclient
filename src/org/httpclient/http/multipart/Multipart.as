@@ -21,7 +21,6 @@ package org.httpclient.http.multipart {
      */
     public function Multipart(parts:Array) { 
       _parts = parts;
-      _parts.push(new EndPart());
     }
     
     /**
