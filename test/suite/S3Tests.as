@@ -14,6 +14,7 @@ package suite {
       addTest(S3PutTest.suite());
       addTest(S3DeleteTest.suite());
       addTest(HttpsTest.suite());      
+      addTest(S3PostTest.suite());
     }
     
   }

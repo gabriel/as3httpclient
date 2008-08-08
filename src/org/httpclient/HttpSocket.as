@@ -203,17 +203,11 @@ package org.httpclient {
         
         _requestBuffer = new HttpRequestBuffer(request.body);
         
-        //Log.debug("Sending request data");
-        //var debug:String = "";
+        Log.debug("Sending request data");
         while (_requestBuffer.hasData) {
           var bytes:ByteArray = _requestBuffer.read();
           //Log.debug("<" + bytes.length + ">");
           if (bytes.length > 0) {
-            
-            // DEBUGGING
-            //debug += bytes.readUTFBytes(bytes.length);
-            //bytes.position = 0;
-            
             
             _socket.writeBytes(bytes);
             _timer.reset();
@@ -222,8 +216,7 @@ package org.httpclient {
             // http://tech.groups.yahoo.com/group/flexcoders/message/72197
             _socket.flush();
           }
-        }
-        //Log.debug("sent=" + debug)
+        }        
       }
       Log.debug("Send request done");
       headerBytes.position = 0;

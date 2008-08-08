@@ -11,6 +11,7 @@ package org.httpclient.http.multipart {
     private var _name:String;
     private var _contentType:String;        
     private var _contentTransferEncoding:String;
+    private var _contentDispositionExtras:Array;
     
     private var _header:ByteArray;
     private var _payload:*;
@@ -21,10 +22,12 @@ package org.httpclient.http.multipart {
      *  
      * @param payload
      * @param contentType
+     * @param contentDispositionExtras Extra parameters for content disposition [ { name:"filename", value:"foo.txt" }, ...]
      * @param contentTransferEncoding
      *  
      */
-    public function Part(name:String, payload:*, contentType:String = null, contentTransferEncoding:String = null) { 
+    public function Part(name:String, payload:*, contentType:String = null, 
+      contentDispositionExtras:Array = null, contentTransferEncoding:String = null) { 
       
       // Convert payload to UTF bytes if its a String
       if (payload is String) {
@@ -37,6 +40,7 @@ package org.httpclient.http.multipart {
       _name = name;
       _payload = payload;
       _contentType = contentType;
+      _contentDispositionExtras = contentDispositionExtras;
       _contentTransferEncoding = contentTransferEncoding;
       
       _header = header();
@@ -117,6 +121,12 @@ package org.httpclient.http.multipart {
       // Content disposition
       bytes.writeUTFBytes("Content-Disposition: form-data; ");
       if (_name) bytes.writeUTFBytes("name=\"" + _name + "\"")
+      
+      if (_contentDispositionExtras)
+        _contentDispositionExtras.forEach(function(param:*, index:int, array:Array):void {
+          bytes.writeUTFBytes("; " + param.name + "=\"" + param.value + "\"");
+        });
+      
       bytes.writeUTFBytes("\r\n");
       
       // Content type

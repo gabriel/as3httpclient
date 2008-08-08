@@ -56,12 +56,13 @@ package s3 {
       var conditions:Array = [];
       conditions.push({ bucket: bucketName });
       conditions.push({ key: objectName });
-      conditions.push({ "Content-Type":contentType });
+      conditions.push({ "Content-Type": contentType });
       
       if (isFlash) conditions.push([ "starts-with", "$Filename", "" ]);
       
       policyOptions.conditions = conditions;
       var policy:String = JSON.encode(policyOptions);            
+      //Log.debug("policy=" + policy);
       if (encode) policy = Base64.encode(policy);
       return policy;
     }

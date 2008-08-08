@@ -15,7 +15,7 @@ package org.httpclient.http.multipart {
      * @param contentType Content type
      */
     public function FilePart(file:File, contentType:String = "application/octet-stream") {      
-      super("file", HttpFileStream.readFile(file), contentType, "binary");
+      super("file", HttpFileStream.readFile(file), contentType, [ { name:"filename", value:file.name } ], "binary");
     }
     
   }

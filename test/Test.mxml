@@ -24,7 +24,7 @@
  				var ts:TestSuite = new TestSuite();
  				
  				// Toggle this for suite vs single test
- 				var singleTest:Boolean = true;
+ 				var singleTest:Boolean = false;
  				
  				if (!singleTest) {
           ts.addTest(new S3Tests());

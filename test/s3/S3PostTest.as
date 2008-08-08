@@ -32,10 +32,10 @@ package s3 {
     public function testPost():void {
       var client:HttpClient = new HttpClient();
             
-      var bucketName:String = "http-test-post";
+      var bucketName:String = "http-test-put";
       var objectName:String = "test-post.txt";
       
-      var uri:URI = new URI("http://" + bucketName + ".s3.amazonaws.com/" + objectName);
+      var uri:URI = new URI("http://" + bucketName + ".s3.amazonaws.com/");
       var contentType:String = "text/plain";
       
       var accessKey:String = "0RXZ3R7Y034PA8VGNWR2";      
@@ -46,7 +46,7 @@ package s3 {
       /*var secretAccessKey:String = "<SECRET>";      
       var signature:String = postOptions.getSignature(secretAccessKey, policy);
       Log.debug("signature=" + signature);*/
-      var signature:String = "t2BddItEPDtljgVaQRxBkNL1qGM="; 
+      var signature:String = "pLlELBq/ky4o7X5arS5BHRjcPnQ="; 
       
       var data:ByteArray = new ByteArray();
       data.writeUTFBytes("This is a test");
@@ -58,7 +58,8 @@ package s3 {
         new Part("AWSAccessKeyId", accessKey),
         new Part("Policy", policy),
         new Part("Signature", signature),
-        new Part("file", data, contentType)
+        new Part("file", data, contentType, [ { name:"filename", value:objectName } ]),
+        new Part("submit", "Upload")
       ]);
       
       var response:HttpResponse = null;
