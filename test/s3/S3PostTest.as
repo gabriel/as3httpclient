@@ -43,9 +43,10 @@ package s3 {
       var policy:String = postOptions.getPolicy();
       
       // This is how I got the signature below
-      // var secretAccessKey:String = "<SECRET KEY>";      
-      // var signature:String = postOptions.getSignature(secretAccessKey, policy);
-      var signature:String = "pLlELBq/ky4o7X5arS5BHRjcPnQ="; 
+      var secretAccessKey:String = "yzvUYleW1Jc8FXSGKz6ISJiz+J/n36UxgqzT26n0";      
+      var signature:String = postOptions.getSignature(secretAccessKey, policy);
+      Log.debug("signature=" + signature);
+      //var signature:String = "pLlELBq/ky4o7X5arS5BHRjcPnQ="; 
       
       var data:ByteArray = new ByteArray();
       data.writeUTFBytes("This is a test");
@@ -57,7 +58,7 @@ package s3 {
         new Part("AWSAccessKeyId", accessKey),
         new Part("Policy", policy),
         new Part("Signature", signature),
-        new Part("file", data, contentType, "binary")
+        new Part("file", data, contentType)
       ]);
       
       var response:HttpResponse = null;
@@ -74,6 +75,10 @@ package s3 {
       
       client.listener.onError = function(event:ErrorEvent):void {
         fail(event.text);
+      };
+      
+      client.listener.onData = function(event:HttpDataEvent):void {
+        Log.debug(event.readUTFBytes());
       };
       
       client.postMultipart(uri, multipart);

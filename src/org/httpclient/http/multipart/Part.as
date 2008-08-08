@@ -49,10 +49,9 @@ package org.httpclient.http.multipart {
      */
     private function get nextBytes():* {
       if (_header.bytesAvailable > 0) return _header;      
-      if (_payload.bytesAvailable > 0) return _payload;      
-      if (_footer.bytesAvailable > 0) return _footer;
-
-      throw Error("Nothing left for part");
+      else if (_payload.bytesAvailable > 0) return _payload;
+      else if (_footer.bytesAvailable > 0) return _footer;      
+      else throw Error("Nothing left for part");
     }
     
     /**
@@ -128,22 +127,27 @@ package org.httpclient.http.multipart {
       
       // Empty line      
       bytes.writeUTFBytes("\r\n");
+
+      // DEBUG
+      //bytes.position = 0;
+      //var data:String = bytes.readUTFBytes(bytes.length);
+      //Log.debug("='" + data + "'");      
             
       bytes.position = 0;
+      
       return bytes;
     }
     
     /**
-     * Build footer
-     * Example,
-     *   --BOUNDARY--
+     * Part footer.
+     * @return CRLF
      */
     protected function footer():ByteArray {
       var bytes:ByteArray = new ByteArray();
-      bytes.writeUTFBytes("--" + Multipart.BOUNDARY + "--\r\n");
-      bytes.position = 0;
+      bytes.writeUTFBytes("\r\n");
+      bytes.position = 0;      
       return bytes;
     }
-    
   }
+        
 }

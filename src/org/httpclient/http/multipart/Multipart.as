@@ -12,8 +12,11 @@ package org.httpclient.http.multipart {
     
     private var _parts:Array = [];
     
+    private var _footer:ByteArray;
+    
     private var _partIndex:int = 0; // Index to current part
     private var _bytesSent:uint = 0; // Bytes sent for current part
+    private var _footerSent:Boolean = false;
         
     /**
      * Create multipart.
@@ -21,6 +24,7 @@ package org.httpclient.http.multipart {
      */
     public function Multipart(parts:Array) { 
       _parts = parts;
+      _footer = footer();
     }
     
     /**
@@ -32,6 +36,7 @@ package org.httpclient.http.multipart {
       for each(var part:Part in _parts) {
         length += part.length;
       }
+      length += _footer.length;
       return length;
     }
     
@@ -42,7 +47,13 @@ package org.httpclient.http.multipart {
      * @param length Number of bytes to read from current part
      */
     public function readBytes(bytes:ByteArray, offset:uint, length:uint):void {      
-      if (!hasMoreParts) return;
+      if (!hasMoreParts) {
+        if (!_footerSent) {
+          _footer.readBytes(bytes, offset, length);
+          _footerSent = true;
+        }
+        return;
+      }
       
       currentPart.readBytes(bytes, offset, length);
       
@@ -61,8 +72,9 @@ package org.httpclient.http.multipart {
      * @return Number of bytes to read
      */
     public function get bytesAvailable():uint {
-      if (!hasMoreParts) throw new Error("No parts left to read");      
-      return currentPart.bytesAvailable;
+      if (hasMoreParts) return currentPart.bytesAvailable;
+      else if (!_footerSent) return _footer.bytesAvailable;
+      else return 0;
     }
     
     /**
@@ -70,6 +82,7 @@ package org.httpclient.http.multipart {
      * @return Current part
      */
     public function get currentPart():Part {
+      if (!hasMoreParts) return null;
       return Part(_parts[_partIndex]);
     }
     
@@ -81,6 +94,17 @@ package org.httpclient.http.multipart {
       return _partIndex < _parts.length;
     }
         
+    /**
+     * Build footer
+     * Example,
+     *   --BOUNDARY--
+     */
+    protected function footer():ByteArray {
+      var bytes:ByteArray = new ByteArray();
+      bytes.writeUTFBytes("--" + Multipart.BOUNDARY + "--\r\n");
+      bytes.position = 0;
+      return bytes;
+    }
     
     //
     // From apache httpclient, not using random boundary.
