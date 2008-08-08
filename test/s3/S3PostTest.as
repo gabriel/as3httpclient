@@ -32,7 +32,7 @@ package s3 {
     public function testPost():void {
       var client:HttpClient = new HttpClient();
             
-      var bucketName:String = "http-test-put";
+      var bucketName:String = "http-test-post";
       var objectName:String = "test-post.txt";
       
       var uri:URI = new URI("http://" + bucketName + ".s3.amazonaws.com/" + objectName);
@@ -43,10 +43,10 @@ package s3 {
       var policy:String = postOptions.getPolicy();
       
       // This is how I got the signature below
-      var secretAccessKey:String = "yzvUYleW1Jc8FXSGKz6ISJiz+J/n36UxgqzT26n0";      
+      /*var secretAccessKey:String = "<SECRET>";      
       var signature:String = postOptions.getSignature(secretAccessKey, policy);
-      Log.debug("signature=" + signature);
-      //var signature:String = "pLlELBq/ky4o7X5arS5BHRjcPnQ="; 
+      Log.debug("signature=" + signature);*/
+      var signature:String = "t2BddItEPDtljgVaQRxBkNL1qGM="; 
       
       var data:ByteArray = new ByteArray();
       data.writeUTFBytes("This is a test");
