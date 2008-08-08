@@ -14,6 +14,8 @@ package s3 {
   import flash.events.Event;
   import flash.events.ErrorEvent;
   
+   import flash.filesystem.File;
+  
   public class S3PostTest extends TestCase {
     
     public function S3PostTest(methodName:String):void {
@@ -23,6 +25,7 @@ package s3 {
     public static function suite():TestSuite {      
       var ts:TestSuite = new TestSuite();
       ts.addTest(new S3PostTest("testPost"));
+      ts.addTest(new S3PostTest("testPostFile"));
       return ts;
     }
     
@@ -79,12 +82,65 @@ package s3 {
       };
       
       client.listener.onData = function(event:HttpDataEvent):void {
-        Log.debug(event.readUTFBytes());
+        //Log.debug(event.readUTFBytes());
       };
       
       client.postMultipart(uri, multipart);
     }    
     
+    public function testPostFile():void {
+      var client:HttpClient = new HttpClient();
+          
+      var bucketName:String = "http-test-put";
+      var objectName:String = "test-post-file.png";
+    
+      var uri:URI = new URI("http://" + bucketName + ".s3.amazonaws.com/");
+      var contentType:String = "image/png";
+    
+      var accessKey:String = "0RXZ3R7Y034PA8VGNWR2";      
+      var postOptions:S3PostOptions = new S3PostOptions(bucketName, objectName, accessKey, { contentType: contentType });      
+      var policy:String = postOptions.getPolicy();
+    
+      // This is how I got the signature below
+      /*var secretAccessKey:String = "<SECRET>";      
+            var signature:String = postOptions.getSignature(secretAccessKey, policy);
+            Log.debug("signature=" + signature);*/
+      var signature:String = "J18r/1e0HvuGYrrSu5lUo0XJAMI="; 
+        
+      var file:File = new File("app:/test/assets/test.png");
+        
+      var multipart:Multipart = new Multipart([
+        new Part("key", objectName), 
+        new Part("Content-Type", contentType),
+        new Part("AWSAccessKeyId", accessKey),
+        new Part("Policy", policy),
+        new Part("Signature", signature),
+        new FilePart(file),
+        new Part("submit", "Upload")
+      ]);
+    
+      var response:HttpResponse = null;
+          
+      client.listener.onComplete = addAsync(function():void {
+        assertNotNull(response);
+      }, 20 * 1000);
+    
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        response = event.response;
+        Log.debug("Response: " + response);
+        assertTrue(response.isSuccess);
+      };
+    
+      client.listener.onError = function(event:ErrorEvent):void {
+        fail(event.text);
+      };
+    
+      client.listener.onData = function(event:HttpDataEvent):void {
+        Log.debug(event.readUTFBytes());
+      };
+    
+      client.postMultipart(uri, multipart);
+    }
   }
   
 }
