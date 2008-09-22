@@ -40,9 +40,7 @@ package httpclient.http {
         assertTrue(response.isSuccess);
       };      
 
-      var uri:URI = new URI("http://localhost:8080/shrub/test");
-      client.get(uri);
-      
+      var uri:URI = new URI("http://localhost:8080/shrub/test");      
       var request:HttpRequest = new Get();
       request.addHeader("X-WSSE", "UsernameToken");
       request.addHeader("Username", "tom");
