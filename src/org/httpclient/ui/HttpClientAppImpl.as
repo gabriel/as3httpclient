@@ -13,6 +13,7 @@ package org.httpclient.ui {
   import org.httpclient.http.*;
   import org.httpclient.events.*;
   import com.adobe.net.URI;
+  import com.adobe.utils.StringUtil;
 
   public class HttpClientAppImpl extends Application {
     
@@ -109,10 +110,14 @@ package org.httpclient.ui {
      */
     public function addCustomHeaders(request:HttpRequest):void {
       var headerToAdd:Array = [];
-      var headerLines:Array = requestHeaderArea.text.split("\n");
+      var headerLines:Array = requestHeaderArea.text.split(/\r+/);
       for each(var headerLine:String in headerLines) {
-        var header:Array = headerLine.split(/:\s*/, 2);
-        request.addHeader(header[0], header[1]);
+        var index:int = headerLine.indexOf(":");
+        if (index != -1) {
+          var key:String = StringUtil.trim(headerLine.substring(0, index));
+          var value:String = StringUtil.trim(headerLine.substr(index + 1));
+          request.addHeader(key, value);
+        }
       }      
     }
 
