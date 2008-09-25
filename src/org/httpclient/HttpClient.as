@@ -137,7 +137,7 @@ package org.httpclient {
      *    { name: "lname", value: "LastName1" } 
      *   ];
      *  
-     *   client.post(new URI("http://foo.com/"), variables);
+     *   client.postFormData(new URI("http://foo.com/"), variables);
      *  
      * @param uri
      * @param variables
@@ -164,6 +164,12 @@ package org.httpclient {
      * @param uri
      * @param body
      * @param contentType
+     *  
+     * The request body can be anything but should respond to:
+     *  - readBytes(bytes:ByteArray, offset:uint, length:uint)
+     *  - length
+     *  - bytesAvailable
+     *  - close
      */
     public function post(uri:URI, body:*, contentType:String = null):void {
       var post:Post = new Post();
@@ -173,15 +179,41 @@ package org.httpclient {
     }
     
     /**
-     * Put.
+     * Put with raw data.
+     *  
      * @param uri
      * @param body
      * @param contentType
+     *  
+     * The request body can be anything but should respond to:
+     *  - readBytes(bytes:ByteArray, offset:uint, length:uint)
+     *  - length
+     *  - bytesAvailable
+     *  - close
      */ 
     public function put(uri:URI, body:*, contentType:String = null):void {
       var put:Put = new Put();
       put.body = body;
       put.contentType = contentType;
+      request(uri, put);
+    }
+    
+    /**
+     * Put with form data.
+     *  
+     *   var variables:Array = [ 
+     *    { name: "fname", value: "FirstName1" }, 
+     *    { name: "lname", value: "LastName1" } 
+     *   ];
+     *  
+     *   client.putFormData(new URI("http://foo.com/"), variables);
+     *  
+     * @param uri
+     * @param variables
+     */
+    public function putFormData(uri:URI, variables:Array):void {
+      var put:Put = new Put();
+      put.setFormData(variables);
       request(uri, put);
     }
     
