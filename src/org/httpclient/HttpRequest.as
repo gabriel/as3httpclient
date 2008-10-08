@@ -178,7 +178,9 @@ package org.httpclient {
       if (!version) version = "1.1";
       
       if (proxy) {
-        bytes.writeUTFBytes(method + " " + uri.toString() + " HTTP/" + version + "\r\n");
+        var pattern:RegExp = /\?.*$/;
+        var tmp:String = uri.toString().replace(pattern, "?") + params.join("&");
+        bytes.writeUTFBytes(method + " " + tmp + " HTTP/" + version + "\r\n");
       } else {
         bytes.writeUTFBytes(method + " " + path + " HTTP/" + version + "\r\n");
       }

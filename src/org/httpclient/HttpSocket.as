@@ -160,6 +160,11 @@ package org.httpclient {
           var socket:TLSSocket = new TLSSocket();
           socket.startTLS(_socket, uri.authority);
           _socket = socket;
+          _socket.addEventListener(Event.CONNECT, onConnect);
+          _socket.addEventListener(Event.CLOSE, onClose);
+          _socket.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+          _socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
+          _socket.addEventListener(ProgressEvent.SOCKET_DATA, onSocketData);
           sendRequest(uri, request);
         } else {
           _dispatcher.dispatchEvent(new HttpErrorEvent(HttpErrorEvent.ERROR, false, false, "CONNECT method failed", 1));
