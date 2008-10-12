@@ -53,5 +53,5 @@
     <language>EN</language>
     <title>AS3 Http Client Library</title>
   </metadata>
-  <output>bin/as3httpclientlib.swc</output>
+  <output>bin/as3httpclientlib-1_0.swc</output>
 </flex-config>

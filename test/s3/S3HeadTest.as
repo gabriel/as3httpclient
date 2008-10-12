@@ -33,11 +33,14 @@ package s3 {
             
       var uri:URI = new URI("http://http-test.s3.amazonaws.com/test.png");
       
-      var request:HttpRequest = new Head();
-      
       client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
-        assertNotNull(event.response);        
+        assertNotNull(event.response);  
+        assertNotNull(event.response.header);
         assertTrue(event.response.header.length > 0);
+        
+        assertNotNull(event.response.header.getValue("x-amz-request-id"));
+        // Test case insensitivity
+        assertNotNull(event.response.header.getValue("X-amz-reQuest-Id"));
          
       }, 20 * 1000);
       
@@ -49,7 +52,7 @@ package s3 {
         fail(event.text);
       };
       
-      client.request(uri, request);
+      client.head(uri);
       
     }
     

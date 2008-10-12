@@ -227,6 +227,14 @@ package org.httpclient {
       request(uri, new Head());
     }
     
+    /**
+     * Delete.
+     * (Delete is a keyword; which is why this method signature is inconsistent)
+     * @param uri
+     */
+    public function del(uri:URI):void {
+      request(uri, new Delete());
+    }
   }
 
 }

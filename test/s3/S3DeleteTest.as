@@ -35,8 +35,6 @@ package s3 {
       
       var uri:URI = new URI("http://http-test-put.s3.amazonaws.com/test.txt");
       
-      var request:HttpRequest = new Delete();
-            
       client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
         assertNotNull(event.response);
         Log.debug("Response: " + event.response);
@@ -50,7 +48,7 @@ package s3 {
         fail(event.text);
       };
       
-      client.request(uri, request);      
+      client.del(uri);
     }    
     
   }

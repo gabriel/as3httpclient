@@ -63,6 +63,19 @@ package httpclient.http {
       
     }
     
+    public function testPostFormData():void {
+    
+      var client:HttpClient = new HttpClient();
+      var uri:URI = new URI("http://www.snee.com/xml/crud/posttest.cgi");
+      var variables:Array = [{name:"fname", value:"FirstName1"}, {name:"lname", value: "LastName1"}];
+
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertTrue(event.response.isSuccess);
+      }, 20 * 1000);
+
+      client.postFormData(uri, variables);
+
+    }
   }
   
 }
