@@ -1,0 +1,57 @@
+<!--
+ To build as3httpclientlib.swc, use
+
+   compc -load-config=build-swc.xml
+
+ That is all.
+-->
+<flex-config>
+  <compiler>
+    <external-library-path>
+      <path-element>${flexlib}/libs/player/9/playerglobal.swc</path-element>
+      <path-element>lib/corelib-20070830.swc</path-element>
+      <path-element>lib/as3crypto-1_3_patched.swc</path-element>
+    </external-library-path>
+    
+    <source-path>
+      <path-element>src</path-element>
+    </source-path>
+  </compiler>
+  <include-classes>
+      <class>org.httpclient.HttpClient</class>
+      <class>org.httpclient.HttpHeader</class>
+      <class>org.httpclient.HttpRequest</class>
+      <class>org.httpclient.HttpResponse</class>
+      <class>org.httpclient.HttpSocket</class>
+      <class>org.httpclient.HttpTimer</class>      
+      
+      <class>org.httpclient.http.Delete</class>
+      <class>org.httpclient.http.Get</class>
+      <class>org.httpclient.http.Head</class>
+      <class>org.httpclient.http.Post</class>
+      <class>org.httpclient.http.Put</class>
+      <class>org.httpclient.http.multipart.Multipart</class>
+      <class>org.httpclient.http.multipart.Part</class>
+      <class>org.httpclient.http.multipart.StringPart</class>
+      
+      <class>org.httpclient.events.HttpDataEvent</class>
+      <class>org.httpclient.events.HttpErrorEvent</class>
+      <class>org.httpclient.events.HttpListener</class>
+      <class>org.httpclient.events.HttpRequestEvent</class>
+      <class>org.httpclient.events.HttpStatusEvent</class>
+      <class>org.httpclient.events.HttpResponseEvent</class>
+            
+      <class>org.httpclient.io.HttpBuffer</class>
+      <class>org.httpclient.io.HttpRequestBuffer</class>
+      <class>org.httpclient.io.HttpResponseBuffer</class>
+
+      <class>org.httpclient.Log</class>
+  </include-classes>
+  <metadata>
+    <creator>Gabriel Handford</creator>
+    <description>http://code.google.com/p/as3httpclientlib/</description>
+    <language>EN</language>
+    <title>AS3 Http Client Library</title>
+  </metadata>
+  <output>bin/as3httpclientlib.swc</output>
+</flex-config>
