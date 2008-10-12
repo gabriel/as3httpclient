@@ -56,7 +56,7 @@ package org.httpclient.ui {
       responseHeader = "";    
       
       var listeners:Object = { 
-        onConnect: function():void {
+        onConnect: function(e:HttpRequestEvent):void {
           status = "Connected";
         },
         onRequest: function(e:HttpRequestEvent):void {
@@ -77,7 +77,7 @@ package org.httpclient.ui {
           status = "Closed";
           tabNavigator.selectedIndex = 1;
         },
-        onComplete: function():void {          
+        onComplete: function(e:HttpResponseEvent):void {          
           status = "Completed";
         },
         onError: function(event:ErrorEvent):void {

@@ -33,14 +33,12 @@ package httpclient.http {
             
       var uri:URI = new URI("http://www.snee.com/xml/crud/posttest.cgi");
       
-      var response:HttpResponse = null;      
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);        
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);        
       }, 20 * 1000);
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       var params:Array = [ { name: "fname", value: "FirstName1" }, { name: "lname", value: "LastName1" } ];

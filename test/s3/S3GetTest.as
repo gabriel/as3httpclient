@@ -37,11 +37,9 @@ package s3 {
       
       var request:HttpRequest = new Get();
       var testData:ByteArray = new ByteArray();
-      var response:HttpResponse = null;
       
-      client.listener.onStatus = function(e:HttpStatusEvent):void {
-        response = e.response;
-        assertTrue(response.isSuccess);
+      client.listener.onStatus = function(event:HttpStatusEvent):void {
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onData = function(event:HttpDataEvent):void {
@@ -53,8 +51,8 @@ package s3 {
         fail(event.text);
       };      
       
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
         assertEquals(12258, testData.length)
         
       }, 20 * 1000);
@@ -68,7 +66,6 @@ package s3 {
      */
     public function testGetUrlEncoding():void {
       var client:HttpClient = new HttpClient();
-      var response:HttpResponse = null;
             
       var uri:URI = new URI("http://http-test.s3.amazonaws.com/test space.png");
       
@@ -76,8 +73,7 @@ package s3 {
       var testData:ByteArray = new ByteArray();
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onData = function(event:HttpDataEvent):void {
@@ -89,8 +85,8 @@ package s3 {
         fail(event.text);
       };
       
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
         assertEquals(12258, testData.length)
         
       }, 20 * 1000);
@@ -111,8 +107,7 @@ package s3 {
       var testData:ByteArray = new ByteArray();
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onData = function(event:HttpDataEvent):void {
@@ -124,8 +119,8 @@ package s3 {
         fail(event.text);
       };
       
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
 
         testData.position = 0;
         var data:String = testData.readUTFBytes(testData.bytesAvailable);

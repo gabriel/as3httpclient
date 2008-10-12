@@ -37,17 +37,15 @@ package s3 {
       var uri:URI = new URI("https://http-test.s3.amazonaws.com/test.png");
       
       var request:HttpRequest = new Get();
-      var response:HttpResponse = null;
       var testData:ByteArray = new ByteArray();
       
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
         assertEquals(12258, testData.length);
       }, 20 * 1000);
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onData = function(event:HttpDataEvent):void {
@@ -70,15 +68,12 @@ package s3 {
             
       var uri:URI = new URI("https://http-test-put.s3.amazonaws.com/test.txt");
       
-      var response:HttpResponse = null;
-            
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
       }, 20 * 1000);
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onError = function(event:ErrorEvent):void {

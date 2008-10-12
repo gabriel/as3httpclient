@@ -36,16 +36,14 @@ package s3 {
       var uri:URI = new URI("http://http-test-put.s3.amazonaws.com/test.txt");
       
       var request:HttpRequest = new Delete();
-      var response:HttpResponse = null;
             
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
-        Log.debug("Response: " + response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
+        Log.debug("Response: " + event.response);
       }, 20 * 1000);
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onError = function(event:ErrorEvent):void {

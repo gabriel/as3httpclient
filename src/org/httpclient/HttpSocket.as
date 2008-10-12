@@ -105,7 +105,10 @@ package org.httpclient {
      * @param request HTTP request
      */
     public function request(uri:URI, request:HttpRequest):void {
-      var onConnect:Function = function():void {
+      var onConnect:Function = function(event:Event):void {
+        
+        _dispatcher.dispatchEvent(new HttpRequestEvent(request, null, HttpRequestEvent.CONNECT));
+        
         if (uri.scheme == "https" && _proxy) {
           connectProxy(uri, request);
         } else {
@@ -253,10 +256,10 @@ package org.httpclient {
       }
     }
     
-    private function onResponseComplete(contentLength:Number):void {
+    private function onResponseComplete(response:HttpResponse):void {
       Log.debug("Response complete");
       //onClose(new Event(Event.CLOSE));
-      onComplete();
+      onComplete(response);
       if (!(_socket is TLSSocket)) close(); // Don't close TLSSocket; it has a bug I think
       else _timer.stop();
     }
@@ -278,9 +281,8 @@ package org.httpclient {
       _dispatcher.dispatchEvent(new HttpDataEvent(bytes));
     }
     
-    private function onComplete():void {
-      Log.debug("Complete");
-      _dispatcher.dispatchEvent(new Event(Event.COMPLETE));
+    private function onComplete(response:HttpResponse):void {
+      _dispatcher.dispatchEvent(new HttpResponseEvent(response));
     }
     
     private function onTimeout(idleTime:Number):void {
@@ -294,14 +296,12 @@ package org.httpclient {
     //
 
     private function onConnect(event:Event):void {    
-      _dispatcher.dispatchEvent(event.clone());
-      
-      // Internal callback
+      // Internal callback (does dispatch as well)
       if (_onConnect != null) _onConnect(event);            
     }
   
     private function onClose(event:Event):void {
-      _dispatcher.dispatchEvent(event.clone());                
+      _dispatcher.dispatchEvent(event.clone());
     }
     
     private function onIOError(event:IOErrorEvent):void { 

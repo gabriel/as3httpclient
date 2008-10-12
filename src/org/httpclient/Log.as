@@ -1,4 +1,4 @@
-package {
+package org.httpclient {
   
   import flash.utils.getQualifiedClassName;
   import flash.utils.describeType;
@@ -14,7 +14,7 @@ package {
     public static const ERROR:Number = 4;
     public static const OFF:Number = 5;
     
-    public static var level:Number = DEBUG;
+    public static var level:Number = INFO;
       
     // What to do with logged string  
     private static function output(s:String):void {

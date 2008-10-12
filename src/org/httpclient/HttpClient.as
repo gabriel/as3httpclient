@@ -20,12 +20,14 @@ package org.httpclient {
   import org.httpclient.http.multipart.Multipart;
   //import org.httpclient.http.multipart.FilePart;
     
-  [Event(name=Event.CLOSE, type="flash.events.Event")]
-  [Event(name=Event.COMPLETE, type="flash.events.Event")]
-  [Event(name=Event.CONNECT, type="flash.events.Event")]	
+  [Event(name=Event.CLOSE, type="flash.events.Event")]  
+  
+  [Event(name=HttpRequestEvent.CONNECT, type="org.httpclient.events.HttpRequestEvent")]
+  [Event(name=HttpResponseEvent.COMPLETE, type="org.httpclient.events.HttpResponseEvent")]
+  
   [Event(name=HttpDataEvent.DATA, type="org.httpclient.events.HttpDataEvent")]     
-  [Event(name=HttpStatusEvent.STATUS, type="org.httpclient.events.HttpStatusEvent")]  
-  [Event(name=HttpRequestEvent.COMPLETE, type="org.httpclient.events.HttpRequestEvent")]
+  [Event(name=HttpStatusEvent.STATUS, type="org.httpclient.events.HttpStatusEvent")]
+  [Event(name=HttpRequestEvent.COMPLETE, type="org.httpclient.events.HttpRequestEvent")]  
   [Event(name=HttpErrorEvent.ERROR, type="org.httpclient.events.HttpErrorEvent")]  
   [Event(name=HttpErrorEvent.TIMEOUT_ERROR, type="org.httpclient.events.HttpErrorEvent")]    
   [Event(name=IOErrorEvent.IO_ERROR, type="flash.events.IOErrorEvent")]  
@@ -97,8 +99,8 @@ package org.httpclient {
      *  
      *  var client:HttpClient = new HttpClient();
      *  
-     *  client.listener.onComplete = function():void { ... };
-     *  client.listener.onStatus = function(r:HttpResponse):void { ... };
+     *  client.listener.onComplete = function(e:HttpResponseEvent):void { ... };
+     *  client.listener.onStatus = function(e:HttpStatusEvent):void { ... };
      * 
      *  var uri:URI = new URI("http://http-test.s3.amazonaws.com/test_put.png");
      *  var testFile:File = new File("app:/test/assets/test.png");

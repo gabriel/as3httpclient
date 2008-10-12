@@ -6,6 +6,7 @@ package org.httpclient.events {
   
   public class HttpRequestEvent extends Event {
     
+    public static const CONNECT:String = "requestConnect";
     public static const COMPLETE:String = "requestComplete";
     
     private var _request:HttpRequest;

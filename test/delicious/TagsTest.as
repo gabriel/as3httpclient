@@ -40,16 +40,13 @@ package delicious {
       
       request.addHeader("Authorization", "Basic " + auth); 
       
-      var response:HttpResponse = null;
-                  
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);
-        Log.debug("Response: " + response);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);
+        Log.debug("Response: " + event.response);
       }, 20 * 1000);
       
-      client.listener.onStatus = function(r:HttpResponse):void {
-        response = r;
-        assertTrue(response.isSuccess);
+      client.listener.onStatus = function(event:HttpResponseEvent):void {
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onError = function(error:Error):void {

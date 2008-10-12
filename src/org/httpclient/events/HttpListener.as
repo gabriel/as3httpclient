@@ -6,6 +6,10 @@ package org.httpclient.events {
   import flash.events.SecurityErrorEvent;
   import flash.events.IOErrorEvent;
   
+  /**
+   * Registers for events and forwards notifications to specified listeners
+   * if they are set.
+   */
   public class HttpListener {
     
     public var onClose:Function = null;
@@ -15,12 +19,12 @@ package org.httpclient.events {
     public var onError:Function = null;
     public var onStatus:Function = null;
     public var onRequest:Function = null;
-    
+        
     /**
       * Listeners:
-      *  - onClose()
-      *  - onComplete()
-      *  - onConnect()
+      *  - onClose(e:Event)
+      *  - onComplete(e:HttpResponseEvent)
+      *  - onConnect(e:HttpRequestEvent)
       *  - onData(e:HttpDataEvent)
       *  - onError(e:ErrorEvent)
       *  - onStatus(e:HttpStatusEvent)
@@ -40,8 +44,8 @@ package org.httpclient.events {
     
     public function register(dispatcher:EventDispatcher):void {
       dispatcher.addEventListener(Event.CLOSE, onInternalClose);
-      dispatcher.addEventListener(Event.COMPLETE, onInternalComplete);
-      dispatcher.addEventListener(Event.CONNECT, onInternalConnect);
+      dispatcher.addEventListener(HttpResponseEvent.COMPLETE, onInternalComplete);
+      dispatcher.addEventListener(HttpRequestEvent.CONNECT, onInternalConnect);
       dispatcher.addEventListener(HttpDataEvent.DATA, onInternalData);
       dispatcher.addEventListener(HttpErrorEvent.ERROR, onInternalError);
       dispatcher.addEventListener(HttpErrorEvent.TIMEOUT_ERROR, onInternalError);
@@ -52,15 +56,15 @@ package org.httpclient.events {
     }
     
     protected function onInternalClose(e:Event):void { 
-      if (onClose != null) onClose();
+      if (onClose != null) onClose(e);
     }
     
-    protected function onInternalComplete(e:Event):void { 
-      if (onComplete != null) onComplete();
+    protected function onInternalComplete(e:HttpResponseEvent):void { 
+      if (onComplete != null) onComplete(e);
     }
     
-    protected function onInternalConnect(e:Event):void { 
-      if (onConnect != null) onConnect();
+    protected function onInternalConnect(e:HttpRequestEvent):void { 
+      if (onConnect != null) onConnect(e);
     }
     
     protected function onInternalRequest(e:HttpRequestEvent):void {

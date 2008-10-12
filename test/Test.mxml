@@ -27,16 +27,17 @@
  				var singleTest:Boolean = false;
  				
  				if (!singleTest) {
-          ts.addTest(new S3Tests());
-          ts.addTest(new HttpTests());        
-          ts.addTest(new UtilTests());
-          
+      	  ts.addTest(new S3Tests());
+      		ts.addTest(new HttpTests());        
+      		ts.addTest(new UtilTests());
+    
           // The TLS on del.icio.us isn't supported by as3crypto
           // Non-RSA Client key exchange          
           //ts.addTest(new DeliciousTests());
         } else { 				
- 				  /* For single tests */
-          ts.addTest(new HeaderTest("testGetWithHeader"));        
+  		    /* For single tests */
+  		    ts.addTest(new GetTest("testGet"));
+          //ts.addTest(new HeaderTest("testGetWithHeader"));        
           //ts.addTest(new TagsTest("testGetTags"));
         }
  				

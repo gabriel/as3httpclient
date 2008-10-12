@@ -9,6 +9,7 @@ package org.httpclient.io {
   
   import org.httpclient.HttpResponse;
   import org.httpclient.HttpHeader;
+  import org.httpclient.Log;
   
   import flash.errors.*;
   
@@ -49,9 +50,10 @@ package org.httpclient.io {
         
     /**
      * Create response buffer.
-     * @param onResponseHeader
-     * @param onResponseData
-     * @param onResponseComplete
+     * @param hasResponseBody Whether there is a response body
+     * @param onResponseHeader(response:HttpResponse)
+     * @param onResponseData(bytes:ByteArray)
+     * @param onResponseComplete(response:HttpResponse)
      */
     public function HttpResponseBuffer(hasResponseBody:Boolean, onResponseHeader:Function, onResponseData:Function, onResponseComplete:Function) { 
       super();
@@ -113,8 +115,8 @@ package org.httpclient.io {
       
       // Check if complete
       Log.debug("Payload done? " + _isPayloadDone);
-      if (!_hasResponseBody) _onResponseComplete(0);
-      else if (_isPayloadDone) _onResponseComplete(_responseHeader.contentLength);
+      if (!_hasResponseBody) _onResponseComplete(_responseHeader);
+      else if (_isPayloadDone) _onResponseComplete(_responseHeader);
     }
     
     /**

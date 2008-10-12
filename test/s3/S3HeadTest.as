@@ -34,17 +34,15 @@ package s3 {
       var uri:URI = new URI("http://http-test.s3.amazonaws.com/test.png");
       
       var request:HttpRequest = new Head();
-      var response:HttpResponse = null;
       
-      client.listener.onComplete = addAsync(function():void {
-        assertNotNull(response);        
-        assertTrue(response.header.length > 0);
+      client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
+        assertNotNull(event.response);        
+        assertTrue(event.response.header.length > 0);
          
       }, 20 * 1000);
       
       client.listener.onStatus = function(event:HttpStatusEvent):void {
-        response = event.response;
-        assertTrue(response.isSuccess);
+        assertTrue(event.response.isSuccess);
       };
       
       client.listener.onError = function(event:ErrorEvent):void {
