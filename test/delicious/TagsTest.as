@@ -49,7 +49,7 @@ package delicious {
         assertTrue(event.response.isSuccess);
       };
       
-      client.listener.onError = function(error:Error):void {
+      client.listener.onError = function(error:ErrorEvent):void {
         fail(error.message);
       };
       
