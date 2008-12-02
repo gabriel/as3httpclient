@@ -15,7 +15,7 @@ package org.httpclient {
   public class HttpRequest {
     
     public static const kUriPathEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %?#");
-    public static const kUriQueryEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %=|:?#/@+"); // Probably don't need to escape all these
+    public static const kUriQueryEscapeBitmap:URIEncodingBitmap = new URIEncodingBitmap(" %=|:?#/@+\\"); // Probably don't need to escape all these
     
     // Request method. For example, "GET"
     protected var _method:String;

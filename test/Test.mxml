@@ -26,7 +26,7 @@
  				var ts:TestSuite = new TestSuite();
  				
  				// Toggle this for suite vs single test
- 				var singleTest:Boolean = false;
+ 				var singleTest:Boolean = true;
  				
  				if (!singleTest) {
       	  ts.addTest(new S3Tests());
@@ -38,9 +38,10 @@
           //ts.addTest(new DeliciousTests());
         } else { 				
   		    /* For single tests */
-  		    ts.addTest(new S3DeleteTest("testDelete"));
-          //ts.addTest(new HeaderTest("testGetWithHeader"));        
-          //ts.addTest(new TagsTest("testGetTags"));
+			//ts.addTest(new S3DeleteTest("testDelete"));
+			//ts.addTest(new HeaderTest("testGetWithHeader"));        
+			//ts.addTest(new TagsTest("testGetTags"));
+			ts.addTest(new GetTest("testGetWithDataListener"));
         }
  				
  				return ts;

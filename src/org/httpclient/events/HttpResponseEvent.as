@@ -18,6 +18,6 @@ package org.httpclient.events {
     public function get response():HttpResponse {
       return _response;
     }
-        
+    
   }
 }

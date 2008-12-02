@@ -46,9 +46,10 @@ package org.httpclient {
     /**
      * Create HTTP client.
      * @param proxy URI
+     * @param timeout Default timeout (1 minute)
      */
-    public function HttpClient(proxy:URI = null) {
-      _timeout = -1;
+    public function HttpClient(proxy:URI = null, timeout:int = 60000) {
+      _timeout = timeout;
       _proxy = proxy;
     }
     
@@ -86,10 +87,14 @@ package org.httpclient {
      * @param uri URI
      * @param request HTTP request
      * @param timeout Timeout (in millis)
+     * @param listener Http listener to handle events, if null, the http client will handle events.
      */
-    public function request(uri:URI, request:HttpRequest, timeout:int = 60000):void {
+    public function request(uri:URI, request:HttpRequest, timeout:int = -1, listener:HttpListener = null):void {
       if (timeout == -1) timeout = _timeout;
-      _socket = new HttpSocket(this, timeout, _proxy);
+      var dispatcher:EventDispatcher = null;
+      if (listener != null) dispatcher = listener.register();
+      else dispatcher = this;
+      _socket = new HttpSocket(dispatcher, timeout, _proxy);
       _socket.request(uri, request);
     }
     
@@ -126,9 +131,10 @@ package org.httpclient {
     /**
      * Get request.
      * @param uri
+     * @param listener Listener (if null, the client is the listener)
      */
-    public function get(uri:URI):void {
-      request(uri, new Get());
+    public function get(uri:URI, listener:HttpListener = null):void {
+      request(uri, new Get(), -1, listener);
     }
     
     /**

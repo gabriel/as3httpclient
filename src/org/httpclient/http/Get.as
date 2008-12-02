@@ -19,7 +19,7 @@ package org.httpclient.http {
     override public function get hasResponseBody():Boolean {
       return true;
     }
-        
+
   }
   
 }

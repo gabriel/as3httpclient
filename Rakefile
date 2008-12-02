@@ -6,6 +6,8 @@ project_root = File.expand_path(File.dirname(__FILE__))
 ENV["AIRAKE_ROOT"] ||= project_root
 ENV["AIRAKE_ENV"] ||= "development"
 
+task :default => :compile do; end
+
 # For task list run, rake --tasks
 task :test => [ "air:test" ] do; end 
 task :compile => [ "air:compile" ] do; end 

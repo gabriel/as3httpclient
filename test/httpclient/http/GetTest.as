@@ -21,6 +21,7 @@ package httpclient.http {
     public static function suite():TestSuite {      
       var ts:TestSuite = new TestSuite();
       ts.addTest(new GetTest("testGet"));
+      ts.addTest(new GetTest("testGetWithDataListener"));
       return ts;
     }
     
@@ -40,12 +41,34 @@ package httpclient.http {
       
       client.listener.onData = function(event:HttpDataEvent):void {
         var data:String = event.readUTFBytes();
-        Log.debug("Response data: " + data);
+        //Log.debug("Response data: " + data);
       };
 
       var uri:URI = new URI("http://www.google.com/search?q=rel-me");
       client.get(uri);
       
+    }
+    
+    public function testGetWithDataListener():void {
+      var client:HttpClient = new HttpClient();
+      
+      var listener:HttpDataListener = new HttpDataListener();
+      
+      listener.onDataComplete = function(event:HttpResponseEvent, data:ByteArray):void {
+        assertNotNull(event.response); 
+        assertNotNull(data); 
+        assertTrue(data.length > 0);
+        Log.debug("Data: " + data);
+      };
+      
+      listener.onStatus = function(event:HttpStatusEvent):void {
+        assertTrue(event.response.isSuccess);
+      };
+      
+      listener.onComplete = addAsync(function(event:HttpResponseEvent):void { assertNotNull(event.response); }, 20 * 1000);
+      
+      var uri:URI = new URI("http://www.cnn.com");
+      client.get(uri, listener);
     }
     
   }
