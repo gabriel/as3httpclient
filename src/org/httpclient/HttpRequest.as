@@ -124,7 +124,7 @@ package org.httpclient {
       
       _body = new ByteArray();
       _body.writeUTFBytes(params.map(function(item:*, index:int, array:Array):String { 
-          return encodeURI(item.name) + "=" + encodeURI(item.value); 
+          return encodeURIComponent(item.name) + "=" + encodeURIComponent(item.value); 
         }).join(sep));
         
       _body.position = 0;
