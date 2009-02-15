@@ -4,4 +4,4 @@ An http library written on top of flash.net.Socket (and as3crypto) to be used wi
 
 For more info see: [http://code.google.com/p/as3httpclientlib/](http://code.google.com/p/as3httpclientlib/)
 
-For info on airake, which is used to build and test see: [http://airake.rubyforge.org/](http://airake.rubyforge.org/) and [http://github.com/gabriel/gh-unit/tree/master](http://github.com/gabriel/gh-unit/tree/master)
+For info on airake, which is used to build and test see: [http://airake.rubyforge.org/](http://airake.rubyforge.org/) and [http://github.com/gabriel/airake/tree/master](http://github.com/gabriel/airake/tree/master)
