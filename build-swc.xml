@@ -33,15 +33,18 @@
       <class>org.httpclient.http.multipart.Multipart</class>
       <class>org.httpclient.http.multipart.Part</class>
       <class>org.httpclient.http.multipart.StringPart</class>
+      <!--<class>org.httpclient.http.multipart.FilePart</class>-->
       
       <class>org.httpclient.events.HttpDataEvent</class>
+      <class>org.httpclient.events.HttpDataListener</class>
       <class>org.httpclient.events.HttpErrorEvent</class>
       <class>org.httpclient.events.HttpListener</class>
       <class>org.httpclient.events.HttpRequestEvent</class>
-      <class>org.httpclient.events.HttpStatusEvent</class>
       <class>org.httpclient.events.HttpResponseEvent</class>
+      <class>org.httpclient.events.HttpStatusEvent</class>
             
       <class>org.httpclient.io.HttpBuffer</class>
+      <!--<class>org.httpclient.io.HttpFileStream</class>-->
       <class>org.httpclient.io.HttpRequestBuffer</class>
       <class>org.httpclient.io.HttpResponseBuffer</class>
 
@@ -51,7 +54,7 @@
     <creator>Gabriel Handford</creator>
     <description>http://code.google.com/p/as3httpclientlib/</description>
     <language>EN</language>
-    <title>AS3 Http Client Library</title>
+    <title>AS3 HTTP Client Library</title>
   </metadata>
-  <output>bin/as3httpclientlib-1_0_1.swc</output>
+  <output>bin/as3httpclientlib-1_0_2.swc</output>
 </flex-config>
