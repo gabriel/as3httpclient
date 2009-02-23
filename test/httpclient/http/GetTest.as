@@ -27,6 +27,7 @@ package httpclient.http {
       ts.addTest(new GetTest("testGetWithDataListener"));
       ts.addTest(new GetTest("testCancel"));
       ts.addTest(new GetTest("testClearListeners"));
+      ts.addTest(new GetTest("testMultipleGet"));
       return ts;
     }
     
@@ -110,6 +111,22 @@ package httpclient.http {
       failListener = true;
       client.listener = null;
       client.get(uri);
+    }
+    
+    public function testMultipleGet():void {
+      var client1:HttpClient = new HttpClient();
+      var client2:HttpClient = new HttpClient();
+     
+      client1.listener.onComplete = addAsync(function(event:Event):void {
+        Log.debug("On Complete #1");
+      }, 5 * 1000); 
+      
+      client2.listener.onComplete = addAsync(function(event:Event):void {
+        Log.debug("On Complete #2");
+      }, 5 * 1000);
+      
+      client1.get(new URI("http://www.google.com/"));
+      client2.get(new URI("http://www.yahoo.com/"));
     }
     
     public function testGetWithDataListener():void {
