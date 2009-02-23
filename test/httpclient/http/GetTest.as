@@ -11,6 +11,8 @@ package httpclient.http {
   
   import flash.utils.ByteArray;
   import flash.events.Event;
+  import flash.events.ErrorEvent;
+  import flash.events.IOErrorEvent;
   
   public class GetTest extends TestCase {
     
@@ -21,6 +23,7 @@ package httpclient.http {
     public static function suite():TestSuite {      
       var ts:TestSuite = new TestSuite();
       ts.addTest(new GetTest("testGet"));
+      ts.addTest(new GetTest("testGetOnClose"));
       ts.addTest(new GetTest("testGetWithDataListener"));
       return ts;
     }
@@ -43,10 +46,42 @@ package httpclient.http {
         var data:String = event.readUTFBytes();
         //Log.debug("Response data: " + data);
       };
+      
+      client.listener.onClose = function(event:Event):void {
+        Log.debug("On Close");
+      };
 
       var uri:URI = new URI("http://www.google.com/search?q=rel-me");
       client.get(uri);
       
+    }
+    
+    public function testGetOnClose():void {
+      var client:HttpClient = new HttpClient();
+      
+      client.listener.onClose = addAsync(function(event:Event):void {
+        Log.debug("On Close");
+      }, 20 * 1000);
+
+      var uri:URI = new URI("http://www.google.com/search?q=rel-me");
+      client.get(uri);
+    
+    }
+    
+    public function testGetError():void {
+      var client:HttpClient = new HttpClient();
+
+      client.listener.onError = addAsync(function(errorEvent:ErrorEvent):void {
+        Log.debug("Error: " + errorEvent);
+        assertEquals(errorEvent.type, IOErrorEvent.IO_ERROR);
+      }, 20 * 1000);
+      
+      client.listener.onClose = function(event:Event):void {
+        Log.debug("On Close");
+      };
+
+      var uri:URI = new URI("http://www.invalid.domain/");
+      client.get(uri);
     }
     
     public function testGetWithDataListener():void {

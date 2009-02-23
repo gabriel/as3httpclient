@@ -22,6 +22,7 @@ task :flash_swf do
   cmd = "mxmlc +configname=flex -source-path #{project_root}/src -library-path+=#{project_root}/lib \
 -output #{project_root}/html/HttpClientFlashApp.swf -- #{project_root}/src/org/httpclient/ui/HttpClientApp.mxml"
 
+  puts "Command: #{cmd}"
   system(cmd)
   
 end

@@ -94,10 +94,12 @@ package org.httpclient {
      */
     public function close():void {
       _timer.stop();
-      if (_socket.connected) {
+      if (_socket && _socket.connected) {
         _socket.flush();
         _socket.close();
+        _socket = null;
       }
+      onClose(new Event(Event.CLOSE));
     }
     
     /**
@@ -258,7 +260,6 @@ package org.httpclient {
     
     private function onResponseComplete(response:HttpResponse):void {
       Log.debug("Response complete");
-      //onClose(new Event(Event.CLOSE));
       onComplete(response);
       if (!(_socket is TLSSocket)) close(); // Don't close TLSSocket; it has a bug I think
       else _timer.stop();
@@ -286,9 +287,8 @@ package org.httpclient {
     }
     
     private function onTimeout(idleTime:Number):void {
-      close();
       _dispatcher.dispatchEvent(new HttpErrorEvent(HttpErrorEvent.TIMEOUT_ERROR, false, false, "Timeout", 0));
-      
+      close();
     }
     
     //

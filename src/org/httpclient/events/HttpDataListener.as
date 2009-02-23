@@ -5,7 +5,9 @@ package org.httpclient.events {
   
   
   /**
-   * Same as HttpListener but stores data.
+   * Same as HttpListener but stores data. 
+   * You may want to use the regular HttpListener to handle the data as it becomes
+   * available instead of storing it in memory.
    */
   public class HttpDataListener extends HttpListener {
     
