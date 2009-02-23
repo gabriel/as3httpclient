@@ -258,11 +258,11 @@ package org.httpclient {
       }
     }
     
+    // Called from 
     private function onResponseComplete(response:HttpResponse):void {
       Log.debug("Response complete");
-      onComplete(response);
       if (!(_socket is TLSSocket)) close(); // Don't close TLSSocket; it has a bug I think
-      else _timer.stop();
+      onComplete(response);
     }
     
     //
@@ -283,6 +283,7 @@ package org.httpclient {
     }
     
     private function onComplete(response:HttpResponse):void {
+      _timer.stop();
       _dispatcher.dispatchEvent(new HttpResponseEvent(response));
     }
     
