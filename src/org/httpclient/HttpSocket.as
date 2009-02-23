@@ -307,9 +307,11 @@ package org.httpclient {
       // If we are not a chunked response and we didn't get content length
       // then we just take it as we get it and assume the server closed the connection
       // when there is no more data.
-      var response:HttpResponse = _responseBuffer.header; 
-      if (response.contentLength == -1 && !response.isChunked) {
-        onComplete(response);
+      if (_responseBuffer) {
+        var response:HttpResponse = _responseBuffer.header; 
+        if (response.contentLength == -1 && !response.isChunked) {
+          onComplete(response);
+        }
       }
     }
     

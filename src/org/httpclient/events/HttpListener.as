@@ -57,6 +57,21 @@ package org.httpclient.events {
       return this;
     }
     
+    public function unregister(dispatcher:EventDispatcher = null):HttpListener {
+      if (dispatcher == null) dispatcher = this;
+      dispatcher.removeEventListener(Event.CLOSE, onInternalClose);
+      dispatcher.removeEventListener(HttpResponseEvent.COMPLETE, onInternalComplete);
+      dispatcher.removeEventListener(HttpRequestEvent.CONNECT, onInternalConnect);
+      dispatcher.removeEventListener(HttpDataEvent.DATA, onInternalData);
+      dispatcher.removeEventListener(HttpErrorEvent.ERROR, onInternalError);
+      dispatcher.removeEventListener(HttpErrorEvent.TIMEOUT_ERROR, onInternalError);
+      dispatcher.removeEventListener(HttpStatusEvent.STATUS, onInternalStatus);
+      dispatcher.removeEventListener(HttpRequestEvent.COMPLETE, onInternalRequest);
+      dispatcher.removeEventListener(IOErrorEvent.IO_ERROR, onInternalError);
+      dispatcher.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onInternalError);
+      return this;
+    }
+    
     protected function onInternalClose(e:Event):void { 
       if (onClose != null) onClose(e);
     }

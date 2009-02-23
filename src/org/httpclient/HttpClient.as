@@ -54,7 +54,7 @@ package org.httpclient {
     }
     
     /**
-     * Get listener.
+     * Get listener, it will contruct a listener for you if one does not exist.
      * Redirects events to callbacks.
      * You can use this listener, or use the EventDispatcher listener. Your choice.
      *  
@@ -70,17 +70,30 @@ package org.httpclient {
     
     /**
      * Set the listener.
+     * To clear the listener, use client.listener = null;
      * @para listener Listeners to callback on
      */
     public function set listener(listener:HttpListener):void {
-      //_listener = new HttpListener(listeners);
+      // Unregister existing listener if one exists
+      if (_listener) {
+        _listener.unregister(this);
+      }
+      
       _listener = listener;
-      _listener.register(this);
+      if (_listener)
+        _listener.register(this);
     }
-    
+
     public function set timeout(timeout:int):void { _timeout = timeout; }
     public function get timeout():int { return _timeout; }
 
+    /**
+     * Cancel current request by closing the socket.
+     */
+    public function cancel():void {
+      _socket.close();
+    }
+    
     /**
      * Load a generic request.
      *  

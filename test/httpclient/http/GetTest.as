@@ -25,6 +25,8 @@ package httpclient.http {
       ts.addTest(new GetTest("testGet"));
       ts.addTest(new GetTest("testGetOnClose"));
       ts.addTest(new GetTest("testGetWithDataListener"));
+      ts.addTest(new GetTest("testCancel"));
+      ts.addTest(new GetTest("testClearListeners"));
       return ts;
     }
     
@@ -81,6 +83,32 @@ package httpclient.http {
       };
 
       var uri:URI = new URI("http://www.invalid.domain/");
+      client.get(uri);
+    }
+    
+    public function testCancel():void {
+      var client:HttpClient = new HttpClient();
+      var uri:URI = new URI("http://www.amazon.com/");
+      client.get(uri);
+      client.cancel();
+      // TODO(gabe): Assert canceled
+    }
+    
+    public function testClearListeners():void {
+      var client:HttpClient = new HttpClient();
+      
+      var failListener:Boolean = false;
+      
+      client.listener.onComplete = function(event:Event):void {
+        Log.debug("On Complete");
+        if (failListener) fail("Should be canceled");
+      };
+      
+      var uri:URI = new URI("http://www.amazon.com/");
+      client.get(uri);
+      
+      failListener = true;
+      client.listener = null;
       client.get(uri);
     }
     
