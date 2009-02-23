@@ -39,6 +39,10 @@ package org.httpclient {
     public function get isClientError():Boolean { return _code.search(/\A4\d\d/) != -1; } // 4xx
     public function get isServerError():Boolean { return _code.search(/\A5\d\d/) != -1; } // 5xx
     
+    /**
+     * Get content length.
+     * @return contentLength or -1 if content length was not available
+     */
     public function get contentLength():Number {
       var lengthString:String = _header.getValue("Content-Length");
       if (!lengthString) return -1;

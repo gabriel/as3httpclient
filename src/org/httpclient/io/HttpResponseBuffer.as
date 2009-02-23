@@ -141,7 +141,7 @@ package org.httpclient.io {
           _bodyBytesRead += bytes.length;
         }
         Log.debug("Bytes read (body): " + _bodyBytesRead + ", content length: " + _responseHeader.contentLength);
-        return (_bodyBytesRead >= _responseHeader.contentLength);
+        return (_responseHeader.contentLength != -1 && _bodyBytesRead >= _responseHeader.contentLength);
       }
     }
     
