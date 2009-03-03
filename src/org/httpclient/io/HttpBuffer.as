@@ -111,7 +111,9 @@ package org.httpclient.io {
         
         if (_chunkLength == 0) { 
           var line:String = readLine();
-      
+          if (!line)
+            throw new Error("No data available");
+          
           var match:Array = line.match(/\A([0-9a-fA-F]+).*/);
           if (!match) {
             throw new Error("Invalid chunk; trying to find chunk length at line: " + line);

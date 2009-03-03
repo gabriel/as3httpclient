@@ -28,6 +28,7 @@ package httpclient.http {
       ts.addTest(new GetTest("testCancel"));
       ts.addTest(new GetTest("testClearListeners"));
       ts.addTest(new GetTest("testMultipleGet"));
+      ts.addTest(new GetTest("testClose"));
       return ts;
     }
     
@@ -82,6 +83,10 @@ package httpclient.http {
       client.listener.onClose = function(event:Event):void {
         Log.debug("On Close");
       };
+      
+      client.listener.onComplete = function(event:Event):void {
+        Log.debug("On Complete");
+      };
 
       var uri:URI = new URI("http://www.invalid.domain/");
       client.get(uri);
@@ -93,6 +98,23 @@ package httpclient.http {
       client.get(uri);
       client.cancel();
       // TODO(gabe): Assert canceled
+    }
+    
+    public function testClose():void {
+      var client:HttpClient = new HttpClient();
+      var uri:URI = new URI("http://www.amazon.com/");
+      
+      client.listener.onClose = function(event:Event):void {
+        Log.debug("On Close");
+      };
+      
+      client.listener.onComplete = function(event:Event):void {
+        Log.debug("On Complete");
+      };
+      
+      client.get(uri);
+      client.close();
+      
     }
     
     public function testClearListeners():void {

@@ -41,7 +41,7 @@
 			//ts.addTest(new S3DeleteTest("testDelete"));
 			//ts.addTest(new HeaderTest("testGetWithHeader"));        
 			//ts.addTest(new TagsTest("testGetTags"));
-			ts.addTest(new GetTest("testMultipleGet"));
+			ts.addTest(new GetTest("testClose"));
         }
  				
  				return ts;

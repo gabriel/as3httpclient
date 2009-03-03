@@ -53,6 +53,8 @@ package org.httpclient {
     private var _responseBuffer:HttpResponseBuffer;    
     
     private var _proxy:URI;
+    
+    private var _closed:Boolean;
         
     /**
      * Create HTTP socket.
@@ -93,13 +95,18 @@ package org.httpclient {
      * Close socket.
      */
     public function close():void {
+      if (_closed) return;
+      _closed = true;
+      Log.debug("Called close");
       _timer.stop();
-      if (_socket && _socket.connected) {
-        _socket.flush();
+      if (_socket) {
         _socket.close();
         _socket = null;
       }
-      onClose(new Event(Event.CLOSE));
+      
+      // Dispatch instead of calling onClose which is reserver for socket close notification
+      //onClose(new Event(Event.CLOSE));
+      _dispatcher.dispatchEvent(new Event(Event.CLOSE));
     }
     
     /**
@@ -222,8 +229,8 @@ package org.httpclient {
             _socket.writeBytes(bytes);
             _timer.reset();
              
-            // Flush doesn't work. We are totally fucked.
-            // http://tech.groups.yahoo.com/group/flexcoders/message/72197
+            // We are totally fucked.
+            // https://bugs.adobe.com/jira/browse/FP-6
             _socket.flush();
           }
         }        
@@ -300,27 +307,30 @@ package org.httpclient {
       // Internal callback (does dispatch as well)
       if (_onConnect != null) _onConnect(event);            
     }
-  
+    
     private function onClose(event:Event):void {
       _dispatcher.dispatchEvent(event.clone());
       
       // If we are not a chunked response and we didn't get content length
       // then we just take it as we get it and assume the server closed the connection
       // when there is no more data.
+      // TODO(gabe): Not sure if this is the correct behavior
       if (_responseBuffer) {
         var response:HttpResponse = _responseBuffer.header; 
-        if (response.contentLength == -1 && !response.isChunked) {
+        if (response && response.contentLength == -1 && !response.isChunked) {
           onComplete(response);
         }
       }
     }
     
     private function onIOError(event:IOErrorEvent):void { 
+      if (_closed) return;
       close();
       _dispatcher.dispatchEvent(event.clone());
     }
 
     private function onSecurityError(event:SecurityErrorEvent):void {
+      if (_closed) return;
       close();
       _dispatcher.dispatchEvent(event.clone());
     }

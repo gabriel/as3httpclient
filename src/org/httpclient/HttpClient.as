@@ -98,8 +98,8 @@ package org.httpclient {
      * Cancels the current connection and removes any listeners.
      */
     public function close():void {
-      this.listener = null;
       cancel();
+      this.listener = null;
     }
     
     /**
