@@ -93,6 +93,9 @@ package org.httpclient.io {
               _buffer.truncate();
               _responseHeader = null;
               _isPayloadDone = false;
+            } else if (_responseHeader.code == "204") {
+              // A 204 is a successful response with No Content
+              _hasResponseBody = false;
             } else {                      
               // Pass any extra as payload
               var payload:ByteArray = _buffer.readAvailable();
@@ -114,9 +117,8 @@ package org.httpclient.io {
       }
       
       // Check if complete
-      Log.debug("Payload done? " + _isPayloadDone);
-      if (!_hasResponseBody) _onResponseComplete(_responseHeader);
-      else if (_isPayloadDone) _onResponseComplete(_responseHeader);
+      Log.debug("Has response body? " + _hasResponseBody + "; Payload done? " + _isPayloadDone);
+      if (!_hasResponseBody || _isPayloadDone) _onResponseComplete(_responseHeader);
     }
     
     /**

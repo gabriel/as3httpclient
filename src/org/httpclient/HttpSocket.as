@@ -99,7 +99,8 @@ package org.httpclient {
       _closed = true;
       Log.debug("Called close");
       _timer.stop();
-      if (_socket) {
+      // Need to check if connected (otherwise closing on unconnected socket throws error)
+      if (_socket && _socket.connected) {
         _socket.close();
         _socket = null;
       }

@@ -98,15 +98,19 @@ package httpclient.http {
       client.get(uri);
       client.cancel();
       // TODO(gabe): Assert canceled
+      
+      client.listener.onClose = addAsync(function(event:Event):void {
+        Log.debug("On Close");
+      }, 20 * 1000);
     }
     
     public function testClose():void {
       var client:HttpClient = new HttpClient();
       var uri:URI = new URI("http://www.amazon.com/");
       
-      client.listener.onClose = function(event:Event):void {
+      client.listener.onClose = addAsync(function(event:Event):void {
         Log.debug("On Close");
-      };
+      }, 5 * 1000);
       
       client.listener.onComplete = function(event:Event):void {
         Log.debug("On Complete");
@@ -127,7 +131,7 @@ package httpclient.http {
         if (failListener) fail("Should be canceled");
       };
       
-      var uri:URI = new URI("http://www.amazon.com/");
+      var uri:URI = new URI("http://www.google.com/");
       client.get(uri);
       
       failListener = true;
@@ -141,11 +145,11 @@ package httpclient.http {
      
       client1.listener.onComplete = addAsync(function(event:Event):void {
         Log.debug("On Complete #1");
-      }, 5 * 1000); 
+      }, 10 * 1000); 
       
       client2.listener.onComplete = addAsync(function(event:Event):void {
         Log.debug("On Complete #2");
-      }, 5 * 1000);
+      }, 10 * 1000);
       
       client1.get(new URI("http://www.google.com/"));
       client2.get(new URI("http://www.yahoo.com/"));
