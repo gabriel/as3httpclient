@@ -39,7 +39,6 @@ package httpclient.http {
       client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
         assertNotNull(event.response);
         
-        //Log.debug("Response: " + response);
         testData.position = 0;
         var responseBody:String = testData.readUTFBytes(testData.bytesAvailable);
         
@@ -57,6 +56,7 @@ package httpclient.http {
       
       client.listener.onData = function(event:HttpDataEvent):void {
         testData.writeBytes(event.bytes);
+        Log.debug("Data: " + event.bytes);
       };
       
       client.request(uri, request);
@@ -68,6 +68,10 @@ package httpclient.http {
       var client:HttpClient = new HttpClient();
       var uri:URI = new URI("http://www.snee.com/xml/crud/posttest.cgi");
       var variables:Array = [{name:"fname", value:"FirstName1"}, {name:"lname", value: "LastName1"}];
+
+      client.listener.onData = function(event:HttpDataEvent):void {
+        Log.debug("Data: " + event.bytes);
+      };
 
       client.listener.onComplete = addAsync(function(event:HttpResponseEvent):void {
         assertTrue(event.response.isSuccess);
