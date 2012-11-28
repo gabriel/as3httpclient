@@ -3,3 +3,10 @@
 bin/*
 debug
 bin/Test.swf
+
+#flashbuilder
+.actionScriptProperties
+.flexLibProperties
+.project
+.settings
+bin
