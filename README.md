@@ -36,8 +36,8 @@ The goals for this project are:
 
 Working:
 
-- GET, HEAD, PUT, POST, DELETE
-- multipart/form-data (PUT and POST)
+- GET, HEAD, PUT, POST, DELETE, PATCH
+- multipart/form-data (PUT, PATCH and POST)
 - HTTPS support using AS3Crypto TLS
 - Post with application/x-www-form-urlencoded
 - Reading chunked (Transfer-Encoding)
